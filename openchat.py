@@ -100,19 +100,13 @@ COLORS = {
 }
 
 LOGO = """\
-  ██████  ██████  ██████  ██   ██
- ██    ██ ██   ██ ██      ███  ██
- ██    ██ ██████  █████   ██ █ ██
- ██    ██ ██      ██      ██  ███
-  ██████  ██      ██████  ██   ██
+  ██████  ██████  ██████  ██   ██      ██████  ██   ██  █████  ███████
+ ██    ██ ██   ██ ██      ███  ██     ██       ██   ██ ██   ██    ██  
+ ██    ██ ██████  █████   ██ █ ██     ██       ███████ ███████    ██  
+ ██    ██ ██      ██      ██  ███     ██       ██   ██ ██   ██    ██  
+  ██████  ██      ██████  ██   ██      ██████  ██   ██ ██   ██    ██  
 
-  ██████  ██   ██  █████  ███████
- ██       ██   ██ ██   ██    ██  
- ██       ███████ ███████    ██  
- ██       ██   ██ ██   ██    ██  
-  ██████  ██   ██ ██   ██    ██  
-
-             ─ T U I ─"""
+                              ─ T U I ─"""
 
 
 # ═══════════════════════════════════════════════════════════════
@@ -624,7 +618,7 @@ class LoginScreen(Screen):
             with Center():
                 with Vertical(id="login-card"):
                     yield Static(LOGO, id="logo")
-                    yield Static("─" * 38, classes="sep")
+                    yield Static("─" * 74, classes="sep")
                     yield Label("  Username", classes="lbl")
                     yield Input(placeholder="Enter your name...",
                                 id="name-in", max_length=20)
@@ -633,34 +627,49 @@ class LoginScreen(Screen):
                         for name in COLORS:
                             yield RadioButton(name)
                         yield RadioButton("Random", value=True)
-                    yield Label("  Custom Hex", classes="lbl")
-                    yield Input(placeholder="#FF6B9D",
-                                id="hex-in", max_length=7)
+                        yield RadioButton("Custom")
+                    with Vertical(id="hex-container"):
+                        yield Label("  Custom Hex", classes="lbl")
+                        yield Input(placeholder="#FF6B9D",
+                                    id="hex-in", max_length=7)
                     yield Button("Continue", id="go-btn",
                                  variant="primary")
                     yield Static(
-                        "end-to-end encrypted · zero footprint",
+                        "ctrl+q: quit  ·  end-to-end encrypted · zero footprint",
                         id="tagline",
                     )
+
+    def on_mount(self):
+        self.query_one("#hex-container").styles.display = "none"
 
     @on(RadioSet.Changed, "#clr-pick")
     def _clr(self, ev: RadioSet.Changed):
         lab = ev.pressed.label.plain
-        self._color = COLORS.get(lab, "random")
+        if lab == "Custom":
+            self._color = "custom"
+            self.query_one("#hex-container").styles.display = "block"
+        else:
+            self._color = COLORS.get(lab, "random")
+            self.query_one("#hex-container").styles.display = "none"
 
     @on(Button.Pressed, "#go-btn")
     def _go(self, ev: Button.Pressed):
         name = self.query_one("#name-in", Input).value.strip()
-        hx = self.query_one("#hex-in", Input).value.strip()
         if not name:
             self.notify("Please enter a username.", severity="error")
             return
-        if hx and re.match(r"^#[0-9A-Fa-f]{6}$", hx):
+        
+        if self._color == "custom":
+            hx = self.query_one("#hex-in", Input).value.strip()
+            if not hx or not re.match(r"^#[0-9A-Fa-f]{6}$", hx):
+                self.notify("Please enter a valid hex color (e.g. #FF6B9D).", severity="error")
+                return
             color = hx
         elif self._color == "random":
             color = random.choice(list(COLORS.values()))
         else:
             color = self._color
+            
         self.app.user_name = name.upper()
         self.app.user_color = color
         self.app.user_cid = make_chat_id(self.app.user_name)
@@ -1043,12 +1052,9 @@ class ChatScreen(Screen):
         self._sys(f"  {fp}", "#ECEFF4")
 
     async def _c_exit(self):
-        if self.app.net:
-            await self.app.net.stop()
-        self._hist.clear()
         self._sys("Secure wipe complete. Goodbye.", "#A3BE8C")
         await asyncio.sleep(0.5)
-        self.app.exit()
+        await self.app.exit_secure()
 
     def _c_help(self):
         cmds = [
@@ -1123,7 +1129,7 @@ class OpenChatApp(App):
     /*  Login Screen                                           */
     /* ═══════════════════════════════════════════════════════ */
     #login-card {
-        width: 50;
+        width: 82;
         height: auto;
         background: #3B4252;
         border: round #4C566A;
@@ -1141,6 +1147,15 @@ class OpenChatApp(App):
     .lbl {
         color: #81A1C1;
         padding: 1 0 0 0;
+    }
+    #clr-pick {
+        layout: grid;
+        grid-size: 5 2;
+        height: 5;
+        margin: 1 0;
+    }
+    #hex-container {
+        height: auto;
     }
     #login-card Input {
         margin: 0 0 0 0;
@@ -1171,7 +1186,7 @@ class OpenChatApp(App):
         border-bottom: solid #4C566A;
     }
     #lobby-cards {
-        width: 50;
+        width: 82;
         height: auto;
     }
     .lcard {
@@ -1268,15 +1283,36 @@ class OpenChatApp(App):
     crypto: CryptoEngine | None = None
     net: NetNode | None = None
 
-    BINDINGS = [("ctrl+q", "quit_secure", "Quit")]
+    BINDINGS = [
+        ("ctrl+q", "quit_secure", "Quit"),
+        ("escape", "quit_secure", "Quit"),
+    ]
 
     def on_mount(self):
         self.push_screen(LoginScreen())
 
-    async def action_quit_secure(self):
+    async def exit_secure(self):
+        """Securely wipe history, stop network, and exit."""
+        try:
+            for s in self.screen_stack:
+                if hasattr(s, "_hist"):
+                    s._hist.clear()
+        except Exception:
+            pass
         if self.net:
-            await self.net.stop()
+            try:
+                await self.net.stop()
+            except Exception:
+                pass
+        if self.crypto:
+            try:
+                self.crypto.secure_wipe()
+            except Exception:
+                pass
         self.exit()
+
+    async def action_quit_secure(self):
+        await self.exit_secure()
 
 
 # ═══════════════════════════════════════════════════════════════
