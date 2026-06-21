@@ -796,6 +796,7 @@ class ChatScreen(Screen):
 
     def on_mount(self):
         self._boot_net()
+        self.query_one("#msg-in", Input).focus()
 
     @work(thread=False)
     async def _boot_net(self):
