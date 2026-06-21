@@ -87,11 +87,13 @@ __version__ = "1.0.0"
 COMMANDS = [
     "/join",
     "/connect",
-    "/save",
+    "/save txt",
+    "/save html",
     "/clear",
     "/peers",
     "/fingerprint",
     "/verify",
+    "/lobby",
     "/exit",
     "/help",
 ]
@@ -1013,6 +1015,8 @@ class ChatScreen(Screen):
             self._sys(f"Your fingerprint: {fp}", SYS_PRIMARY)
         elif cmd == "/verify":
             self._c_verify(arg)
+        elif cmd == "/lobby":
+            await self._c_lobby()
         elif cmd == "/exit":
             await self._c_exit()
         elif cmd == "/help":
@@ -1141,6 +1145,19 @@ class ChatScreen(Screen):
         self._sys(f"{peer.name}'s fingerprint:", peer.color)
         self._sys(f"  {fp}", SYS_PRIMARY)
 
+    async def _c_lobby(self):
+        self._sys("Disconnecting and returning to Lobby...", SYS_MUTED)
+        await asyncio.sleep(0.2)
+        if self.app.net:
+            try:
+                await self.app.net.stop()
+            except Exception:
+                pass
+            self.app.net = None
+        self.app.room_name = ""
+        self._hist.clear()
+        self.app.pop_screen()
+
     async def _c_exit(self):
         self._sys("Secure wipe complete. Goodbye.", SYS_SUCCESS)
         await asyncio.sleep(0.5)
@@ -1156,6 +1173,7 @@ class ChatScreen(Screen):
             ("/peers",            "List connected peers"),
             ("/fingerprint",      "Show your Ed25519 fingerprint"),
             ("/verify <ID>",      "Show a peer's fingerprint"),
+            ("/lobby",            "Disconnect and return to Lobby screen"),
             ("/exit",             "Secure wipe and quit"),
         ]
         self._sys("Available commands:", SYS_PRIMARY)
