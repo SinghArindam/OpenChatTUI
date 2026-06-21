@@ -251,6 +251,86 @@
             </div>
         </section>
 
+        <section class="screenshots">
+            <h2 style="text-align: center; margin-bottom: 2rem; font-family: var(--font-serif); font-size: 2.5rem;">Application Interface</h2>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 4rem;">
+                <div>
+                    <h3 style="margin-bottom: 0.5rem;">Login & Customization</h3>
+                    <img src="assets/screenshot_login.svg" alt="Login Screen" style="width: 100%; border-radius: 8px; box-shadow: 0 10px 20px rgba(0,0,0,0.1);">
+                </div>
+                <div>
+                    <h3 style="margin-bottom: 0.5rem;">Network Discovery</h3>
+                    <img src="assets/screenshot_lobby.svg" alt="Lobby Screen" style="width: 100%; border-radius: 8px; box-shadow: 0 10px 20px rgba(0,0,0,0.1);">
+                </div>
+                <div>
+                    <h3 style="margin-bottom: 0.5rem;">Encrypted Chat & Autocomplete</h3>
+                    <img src="assets/screenshot_chat.svg" alt="Chat Screen" style="width: 100%; border-radius: 8px; box-shadow: 0 10px 20px rgba(0,0,0,0.1);">
+                </div>
+                <div>
+                    <h3 style="margin-bottom: 0.5rem;">Secure Exit Menu</h3>
+                    <img src="assets/screenshot_exit.svg" alt="Exit Menu" style="width: 100%; border-radius: 8px; box-shadow: 0 10px 20px rgba(0,0,0,0.1);">
+                </div>
+            </div>
+        </section>
+
+        <section class="commands" style="margin-bottom: 4rem;">
+            <h2 style="text-align: center; margin-bottom: 2rem; font-family: var(--font-serif); font-size: 2.5rem;">Commands Reference</h2>
+            <table style="width: 100%; border-collapse: collapse; background: white; box-shadow: 0 10px 20px rgba(0,0,0,0.05); border-radius: 8px; overflow: hidden;">
+                <tr style="background: var(--text-charcoal); color: white; text-align: left;">
+                    <th style="padding: 1rem;">Command</th>
+                    <th style="padding: 1rem;">Description</th>
+                </tr>
+                <tr style="border-bottom: 1px solid var(--border-sepia);">
+                    <td style="padding: 1rem; font-family: var(--font-mono); color: var(--accent-rust);">/join &lt;ID&gt;</td>
+                    <td style="padding: 1rem;">Connect to a peer by Chat ID</td>
+                </tr>
+                <tr style="border-bottom: 1px solid var(--border-sepia);">
+                    <td style="padding: 1rem; font-family: var(--font-mono); color: var(--accent-rust);">/connect &lt;IP:PORT&gt;</td>
+                    <td style="padding: 1rem;">Direct connection by address</td>
+                </tr>
+                <tr style="border-bottom: 1px solid var(--border-sepia);">
+                    <td style="padding: 1rem; font-family: var(--font-mono); color: var(--accent-rust);">/lobby</td>
+                    <td style="padding: 1rem;">Disconnect and return to the lobby screen</td>
+                </tr>
+                <tr style="border-bottom: 1px solid var(--border-sepia);">
+                    <td style="padding: 1rem; font-family: var(--font-mono); color: var(--accent-rust);">/login</td>
+                    <td style="padding: 1rem;">Disconnect and return to the login screen</td>
+                </tr>
+                <tr style="border-bottom: 1px solid var(--border-sepia);">
+                    <td style="padding: 1rem; font-family: var(--font-mono); color: var(--accent-rust);">/save txt</td>
+                    <td style="padding: 1rem;">Export chat as plaintext file</td>
+                </tr>
+                <tr style="border-bottom: 1px solid var(--border-sepia);">
+                    <td style="padding: 1rem; font-family: var(--font-mono); color: var(--accent-rust);">/save html</td>
+                    <td style="padding: 1rem;">Export chat as styled HTML file</td>
+                </tr>
+                <tr style="border-bottom: 1px solid var(--border-sepia);">
+                    <td style="padding: 1rem; font-family: var(--font-mono); color: var(--accent-rust);">/clear</td>
+                    <td style="padding: 1rem;">Clear the screen (history preserved)</td>
+                </tr>
+                <tr style="border-bottom: 1px solid var(--border-sepia);">
+                    <td style="padding: 1rem; font-family: var(--font-mono); color: var(--accent-rust);">/peers</td>
+                    <td style="padding: 1rem;">List connected peers with IDs</td>
+                </tr>
+                <tr style="border-bottom: 1px solid var(--border-sepia);">
+                    <td style="padding: 1rem; font-family: var(--font-mono); color: var(--accent-rust);">/fingerprint</td>
+                    <td style="padding: 1rem;">Show your Ed25519 fingerprint</td>
+                </tr>
+                <tr style="border-bottom: 1px solid var(--border-sepia);">
+                    <td style="padding: 1rem; font-family: var(--font-mono); color: var(--accent-rust);">/verify &lt;ID&gt;</td>
+                    <td style="padding: 1rem;">Show a peer's fingerprint</td>
+                </tr>
+                <tr style="border-bottom: 1px solid var(--border-sepia);">
+                    <td style="padding: 1rem; font-family: var(--font-mono); color: var(--accent-rust);">/help</td>
+                    <td style="padding: 1rem;">List all commands</td>
+                </tr>
+                <tr>
+                    <td style="padding: 1rem; font-family: var(--font-mono); color: var(--accent-rust);">/exit</td>
+                    <td style="padding: 1rem;">Secure wipe and quit</td>
+                </tr>
+            </table>
+        </section>
+
         <section class="cta-section">
             <h2>Start Communicating</h2>
             <p>Launch immediately in a secure, isolated sandbox using `uv`.</p>
