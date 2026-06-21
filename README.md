@@ -17,10 +17,22 @@ No servers. No logs. No traces.
 
 ## Quick Start
 
-You can run `OpenChatTUI` directly, and dependencies will be managed automatically.
+First, clone the repository:
+```bash
+git clone https://github.com/SinghArindam/OpenChatTUI.git
+cd OpenChatTUI
+```
 
 ### Option A: Using `uv run` (Recommended, Sandbox)
-If you have [`uv`](https://github.com/astral-sh/uv) installed:
+If you don't have [`uv`](https://github.com/astral-sh/uv) installed, install it:
+```bash
+# macOS/Linux
+curl -LsSf https://astral.sh/uv/install.sh | sh
+# Windows
+powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+```
+
+Then launch the app:
 ```bash
 uv run openchat.py
 ```
