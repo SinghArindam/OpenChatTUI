@@ -855,12 +855,12 @@ class ChatScreen(Screen):
                 self._write(kw["name"], kw["color"],
                             kw["text"], kw["ts"])
             elif event == "join":
-                self._sys(f"* {kw['name']} joined the chat",
+                self._sys(f"* {kw['name']} joined the chatroom",
                           kw["color"])
                 self._sidebar()
                 self._hdr()
             elif event == "leave":
-                self._sys(f"* {kw['name']} left the chat",
+                self._sys(f"* {kw['name']} left the chatroom",
                           kw["color"])
                 self._sidebar()
                 self._hdr()
@@ -883,6 +883,7 @@ class ChatScreen(Screen):
         t = Text()
         t.append(f"  {now_hm()}  ", style="dim")
         t.append(msg, style=color)
+        t.justify = "center"
         log.write(t)
         self._hist.append(("sys", "", color, msg, time.time()))
 
