@@ -96,6 +96,7 @@ COLORS = {
     "Peach":    "#EBCB8B",
     "Gold":     "#D4A72C",
     "Rose":     "#BF616A",
+    "White":    "#ECEFF4",
 }
 
 LOGO = """\
