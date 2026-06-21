@@ -29,6 +29,7 @@
             --accent-gold: hsl(45, 95%, 46%);
             --accent-rust: hsl(18, 65%, 44%);
             --accent-success: hsl(140, 45%, 38%);
+            --logo-tui-color: hsl(38, 70%, 35%);
 
             /* UI Elements */
             --border-sepia: hsl(40, 12%, 84%);
@@ -63,6 +64,7 @@
             --accent-gold: hsl(45, 95%, 55%);
             --accent-rust: hsl(18, 75%, 58%);
             --accent-success: hsl(140, 65%, 55%);
+            --logo-tui-color: hsl(45, 95%, 55%);
 
             /* UI Elements */
             --border-sepia: hsl(20, 8%, 18%);
@@ -180,18 +182,13 @@
 
         .logo {
             font-size: 1.35rem;
-            font-weight: 800;
+            font-weight: 850;
             font-family: var(--font-sans);
             letter-spacing: -0.03em;
         }
 
-        .logo-chat {
-            color: var(--accent-peach);
-            transition: color 0.3s ease;
-        }
-
         .logo-tui {
-            color: var(--accent-gold);
+            color: var(--logo-tui-color);
             transition: color 0.3s ease;
         }
 
@@ -891,29 +888,61 @@
         /* Footer */
         footer {
             border-top: 1px solid var(--border-sepia);
-            padding: 4rem 0;
+            padding: 5rem 0;
             text-align: center;
             background-color: var(--bg-card);
         }
 
         .footer-logo {
-            font-size: 1.2rem;
-            font-weight: 800;
-            letter-spacing: -0.03em;
-            margin-bottom: 1rem;
+            font-size: 1.4rem;
+            font-weight: 850;
+            letter-spacing: -0.035em;
+            margin-bottom: 0.75rem;
         }
 
         .footer-text {
-            font-size: 0.85rem;
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            max-width: 500px;
+            margin: 0 auto 1.5rem;
+            line-height: 1.6;
+        }
+
+        .footer-copyright {
+            font-size: 0.8rem;
             color: var(--text-muted);
-            margin-bottom: 1.25rem;
+            margin-bottom: 2rem;
+            border-top: 1px solid var(--border-sepia);
+            padding-top: 1.5rem;
+            max-width: 300px;
+            margin-left: auto;
+            margin-right: auto;
         }
 
         .footer-links {
             display: flex;
             justify-content: center;
-            gap: 1.75rem;
-            font-size: 0.85rem;
+            gap: 2rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .footer-links a {
+            color: var(--text-secondary);
+            position: relative;
+            transition: color 0.2s ease;
+        }
+
+        .footer-links a:hover {
+            color: var(--text-primary);
+        }
+
+        .footer-links a:not(:last-child)::after {
+            content: "·";
+            position: absolute;
+            right: -1.1rem;
+            color: var(--text-muted);
+            pointer-events: none;
         }
 
         /* Animations */
@@ -1002,7 +1031,7 @@
     <header class="nav-header">
         <div class="container nav-container">
             <a href="#" class="logo">
-                Open<span class="logo-chat">Chat</span><span class="logo-tui">TUI</span>
+                OpenChat<span class="logo-tui">TUI</span>
             </a>
 
             <nav class="nav-links">
@@ -1039,8 +1068,7 @@
 
         <!-- Hero Section -->
         <section class="hero">
-            <h1 class="hero-title">Open<span style="color: var(--accent-peach);">Chat</span><span
-                    style="color: var(--accent-gold);">TUI</span></h1>
+            <h1 class="hero-title">OpenChat<span class="logo-tui">TUI</span></h1>
             <p class="hero-subtitle">Encrypted peer-to-peer terminal chat. No servers. No logs. No traces.</p>
 
             <div class="hero-badge-container">
@@ -1353,18 +1381,18 @@
     <footer>
         <div class="container">
             <div class="footer-logo">
-                Open<span style="color: var(--accent-peach);">Chat</span><span
-                    style="color: var(--accent-gold);">TUI</span>
+                OpenChat<span class="logo-tui">TUI</span>
             </div>
             <p class="footer-text">Built for developers who value absolute digital sovereignty.</p>
-            <p class="footer-text" style="margin-top: -0.85rem; font-size: 0.82rem;">&copy; 2026 OpenChatTUI. Licensed
-                under the MIT License.</p>
             <div class="footer-links">
                 <a href="https://github.com/SinghArindam/OpenChatTUI" target="_blank" rel="noopener">GitHub</a>
                 <a href="https://github.com/SinghArindam/OpenChatTUI/blob/main/LICENSE" target="_blank"
                     rel="noopener">License</a>
                 <a href="#features">Features</a>
                 <a href="#commands">Commands</a>
+            </div>
+            <div class="footer-copyright">
+                &copy; 2026 OpenChatTUI. Licensed under the MIT License.
             </div>
         </div>
     </footer>
