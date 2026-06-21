@@ -5,9 +5,13 @@
 **Encrypted peer-to-peer terminal chat.**
 No servers. No logs. No traces.
 
+[🌐 View Landing Page](index.html)
+
 `AES-256-GCM` · `X25519 ECDH` · `Ed25519` · `Zero Footprint`
 
 ---
+
+<img src="assets/screenshot_chat.svg" alt="OpenChatTUI Chat Interface" width="800" style="border-radius: 8px; box-shadow: 0 10px 20px rgba(0,0,0,0.1);"/>
 
 </div>
 
@@ -123,4 +127,4 @@ OpenChatTUI/
 
 ## License
 
-MIT
+[MIT](LICENSE)
