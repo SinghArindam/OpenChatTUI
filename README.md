@@ -51,12 +51,11 @@ This isolates the dependencies within a local virtual environment folder.
 
 No central server. No database. No temp files. Everything lives in RAM and dies when you close the app.
 
-## User Interface & Features
+## What's New
 
-- **Dynamic Autocomplete**: Type `/` in the chat to see a dynamically filtered list of commands. Use `Up`/`Down` and `Tab` or `Enter` to select.
-- **Exit Menu Overlay**: Press `Esc` anywhere to bring up a secure exit menu, preventing accidental quits while providing a quick escape route.
-- **Emergency Quit**: Press `Ctrl+Q` to immediately securely wipe memory and terminate the application.
-- **High-Contrast Design**: Optimized for AMOLED displays with strict black backgrounds and vibrant accents (White/Gold/Peach).
+- **Smart Commands**: Type `/` for instant autocomplete.
+- **Safe Exit**: Press `Esc` for an exit menu, or `Ctrl+Q` for an emergency wipe.
+- **AMOLED Theme**: High-contrast black background with bright white, peach, and gold UI accents.
 
 ## Security Model
 
