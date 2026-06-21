@@ -85,17 +85,17 @@ from rich.text import Text
 __version__ = "1.0.0"
 
 COMMANDS = [
-    "/join",
-    "/connect",
+    "/lobby",
     "/save txt",
     "/save html",
     "/clear",
     "/peers",
     "/fingerprint",
     "/verify",
-    "/lobby",
     "/exit",
     "/help",
+    "/join",
+    "/connect",
 ]
 
 UDP_PORT = 50001
