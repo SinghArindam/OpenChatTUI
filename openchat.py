@@ -68,10 +68,10 @@ from cryptography.hazmat.primitives.kdf.hkdf import HKDF
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 
 from textual.app import App, ComposeResult
-from textual.screen import Screen
+from textual.screen import Screen, ModalScreen
 from textual.widgets import (
     Static, Input, Button, RichLog,
-    RadioSet, RadioButton, Label,
+    RadioSet, RadioButton, Label, OptionList,
 )
 from textual.containers import Container, Horizontal, Vertical, Center, Middle
 from textual import on, work
@@ -83,6 +83,18 @@ from rich.text import Text
 # ═══════════════════════════════════════════════════════════════
 
 __version__ = "1.0.0"
+
+COMMANDS = [
+    "/join",
+    "/connect",
+    "/save",
+    "/clear",
+    "/peers",
+    "/fingerprint",
+    "/verify",
+    "/exit",
+    "/help",
+]
 
 UDP_PORT = 50001
 MCAST_GROUP = "239.0.0.1"
@@ -645,7 +657,7 @@ class LoginScreen(Screen):
                     yield Button("Continue", id="go-btn",
                                  variant="primary")
                     yield Static(
-                        "ctrl+q: quit  ·  end-to-end encrypted · zero footprint",
+                        "esc: menu  ·  ctrl+q: emergency quit  ·  e2ee · zero footprint",
                         id="tagline",
                     )
 
@@ -729,7 +741,7 @@ class LobbyScreen(Screen):
                                          id="join-btn",
                                          variant="primary")
             yield Static(
-                "  AES-256-GCM + X25519 ECDH · Ed25519 Signed",
+                "  AES-256-GCM + X25519 ECDH · ESC: Menu · Ctrl+Q: Emergency Quit",
                 id="lobby-ftr",
             )
 
@@ -769,12 +781,11 @@ class LobbyScreen(Screen):
 class ChatScreen(Screen):
     """Main chat interface with encrypted P2P messaging."""
 
-    BINDINGS = [("ctrl+q", "quit_app", "Quit")]
-
     def __init__(self):
         super().__init__()
         self._hist: list[tuple] = []
         # (type, username, color, content, timestamp)
+        self._curr_matches: list[str] = []
 
     def compose(self) -> ComposeResult:
         room = self.app.room_name or "..."
@@ -789,8 +800,9 @@ class ChatScreen(Screen):
                               highlight=False, markup=False)
                 yield Static("  Peers\n  " + "─" * 16,
                               id="sidebar")
+            yield OptionList(id="cmd-suggestions")
             with Horizontal(id="input-bar"):
-                yield Input(placeholder="Type message or /command...",
+                yield Input(placeholder="Type message or /command... [ESC: Menu, Ctrl+Q: Emergency Quit]",
                             id="msg-in")
                 yield Static("  E2EE", id="enc-badge")
 
@@ -903,6 +915,12 @@ class ChatScreen(Screen):
         if not text:
             return
         ev.input.clear()
+        
+        # Hide suggestions list
+        sugg = self.query_one("#cmd-suggestions", OptionList)
+        sugg.styles.display = "none"
+        self._curr_matches = []
+
         if text.startswith("/"):
             await self._cmd(text)
         else:
@@ -910,6 +928,67 @@ class ChatScreen(Screen):
                         text, time.time())
             if self.app.net:
                 await self.app.net.send(text)
+
+    @on(Input.Changed, "#msg-in")
+    def _input_changed(self, ev: Input.Changed):
+        val = ev.value
+        sugg = self.query_one("#cmd-suggestions", OptionList)
+        if val.startswith("/") and " " not in val:
+            prefix = val.lower()
+            matches = [c for c in COMMANDS if c.startswith(prefix)]
+            if matches:
+                self._curr_matches = matches
+                sugg.clear_options()
+                sugg.add_options(matches)
+                sugg.styles.display = "block"
+                sugg.highlighted = 0
+            else:
+                self._curr_matches = []
+                sugg.styles.display = "none"
+        else:
+            self._curr_matches = []
+            sugg.styles.display = "none"
+
+    def on_key(self, event) -> None:
+        sugg = self.query_one("#cmd-suggestions", OptionList)
+        if sugg.styles.display != "none":
+            if event.key == "up":
+                event.prevent_default()
+                event.stop()
+                if sugg.highlighted is not None and sugg.highlighted > 0:
+                    sugg.highlighted -= 1
+                elif sugg.highlighted is None and sugg.option_count > 0:
+                    sugg.highlighted = sugg.option_count - 1
+            elif event.key == "down":
+                event.prevent_default()
+                event.stop()
+                if sugg.highlighted is not None and sugg.highlighted < sugg.option_count - 1:
+                    sugg.highlighted += 1
+                elif sugg.highlighted is None and sugg.option_count > 0:
+                    sugg.highlighted = 0
+            elif event.key in ("enter", "tab"):
+                if sugg.highlighted is not None and 0 <= sugg.highlighted < len(self._curr_matches):
+                    event.prevent_default()
+                    event.stop()
+                    selected = self._curr_matches[sugg.highlighted]
+                    inp = self.query_one("#msg-in", Input)
+                    inp.value = selected + " "
+                    inp.cursor_position = len(inp.value)
+                    sugg.styles.display = "none"
+                    self._curr_matches = []
+                    inp.focus()
+
+    @on(OptionList.OptionSelected, "#cmd-suggestions")
+    def _cmd_selected(self, ev: OptionList.OptionSelected):
+        idx = ev.option_index
+        if idx is not None and 0 <= idx < len(self._curr_matches):
+            selected = self._curr_matches[idx]
+            inp = self.query_one("#msg-in", Input)
+            inp.value = selected + " "
+            inp.cursor_position = len(inp.value)
+            ev.option_list.styles.display = "none"
+            self._curr_matches = []
+            inp.focus()
 
     # ── Slash commands ────────────────────────────────────────
 
@@ -1086,9 +1165,40 @@ class ChatScreen(Screen):
             t.append(f" {d}", style="#FFFFFF")
             self.query_one("#chat-log", RichLog).write(t)
 
-    async def action_quit_app(self):
-        await self._c_exit()
+# ═══════════════════════════════════════════════════════════════
+#  Screen: Exit Menu Modal Overlay
+# ═══════════════════════════════════════════════════════════════
 
+class ExitMenuScreen(ModalScreen):
+    """Modal overlay for continue / quit selection."""
+
+    def compose(self) -> ComposeResult:
+        with Vertical(id="exit-menu-card"):
+            yield Label("Quit OpenChatTUI?", id="exit-menu-title")
+            yield Label(
+                "Are you sure you want to exit?\nThis will trigger a secure memory wipe.",
+                id="exit-menu-desc"
+            )
+            with Horizontal(id="exit-menu-buttons"):
+                yield Button("Continue Chat", id="exit-continue")
+                yield Button("Secure Quit", id="exit-quit")
+
+    def on_mount(self):
+        self.query_one("#exit-continue", Button).focus()
+
+    @on(Button.Pressed, "#exit-continue")
+    def _on_continue(self):
+        self.dismiss(False)
+
+    @on(Button.Pressed, "#exit-quit")
+    def _on_quit(self):
+        self.dismiss(True)
+
+    def on_key(self, event) -> None:
+        if event.key == "escape":
+            event.prevent_default()
+            event.stop()
+            self.dismiss(False)
 
 # ═══════════════════════════════════════════════════════════════
 #  Application
@@ -1282,6 +1392,68 @@ class OpenChatApp(App):
         padding: 1 0;
         text-align: center;
     }
+    #cmd-suggestions {
+        dock: bottom;
+        height: auto;
+        max-height: 6;
+        background: #000000;
+        color: #FFFFFF;
+        border-top: solid #333333;
+        display: none;
+    }
+    #cmd-suggestions > .option-list--active {
+        background: #FFFFFF;
+        color: #000000;
+        text-style: bold;
+    }
+    ExitMenuScreen {
+        align: center middle;
+        background: rgba(0, 0, 0, 0.7);
+    }
+    #exit-menu-card {
+        width: 50;
+        height: auto;
+        background: #000000;
+        border: round #333333;
+        padding: 1 2;
+    }
+    #exit-menu-title {
+        color: #FFFFFF;
+        text-style: bold;
+        text-align: center;
+        width: 100%;
+        margin-bottom: 1;
+    }
+    #exit-menu-desc {
+        color: #888888;
+        text-align: center;
+        width: 100%;
+        margin-bottom: 2;
+    }
+    #exit-menu-buttons {
+        height: auto;
+        align: center middle;
+    }
+    #exit-menu-buttons Button {
+        margin: 0 1;
+        min-width: 18;
+    }
+    #exit-continue {
+        background: #FFFFFF;
+        color: #000000;
+    }
+    #exit-continue:hover, #exit-continue:focus {
+        background: #888888;
+        color: #000000;
+    }
+    #exit-quit {
+        background: #FF3B30;
+        color: #FFFFFF;
+    }
+    #exit-quit:hover, #exit-quit:focus {
+        background: #CC2D25;
+        color: #FFFFFF;
+    }
     """
 
     # ── App state ─────────────────────────────────────────────
@@ -1295,12 +1467,21 @@ class OpenChatApp(App):
     net: NetNode | None = None
 
     BINDINGS = [
-        ("ctrl+q", "quit_secure", "Quit"),
-        ("escape", "quit_secure", "Quit"),
+        ("ctrl+q", "quit_emergency", "Emergency Quit"),
+        ("escape", "show_exit_menu", "Exit Menu"),
     ]
 
     def on_mount(self):
         self.push_screen(LoginScreen())
+
+    async def action_quit_emergency(self):
+        await self.exit_secure()
+
+    def action_show_exit_menu(self):
+        def on_dismiss(result):
+            if result:
+                self.run_worker(self.exit_secure())
+        self.push_screen(ExitMenuScreen(), callback=on_dismiss)
 
     async def exit_secure(self):
         """Securely wipe history, stop network, and exit."""
