@@ -227,6 +227,7 @@ graph LR
 | Peach | `#EBCB8B` | Warm yellow |
 | Gold | `#D4A72C` | Rich gold |
 | Rose | `#BF616A` | Soft red |
+| White | `#ECEFF4` | Snow storm white |
 | Random | — | Randomly picked from above |
 | Custom | User-defined | Any valid `#RRGGBB` hex code |
 
