@@ -5,7 +5,7 @@
 **Encrypted peer-to-peer terminal chat.**
 No servers. No logs. No traces.
 
-[🌐 View Landing Page](index.html)
+[🌐 View Landing Page](https://singharindam.github.io/OpenChatTUI/)
 
 `AES-256-GCM` · `X25519 ECDH` · `Ed25519` · `Zero Footprint`
 
