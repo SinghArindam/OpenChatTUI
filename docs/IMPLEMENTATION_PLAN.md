@@ -199,8 +199,8 @@ graph LR
 ║     └──────────────────────────────────────────────────────────────────────┘   ║
 ║                                                                                ║
 ║     Your Color:                                                                ║
-║     ● Frost    ● Coral    ● Mint    ● Lavender    ● Peach                      ║
-║     ● Gold     ● Rose     ● White   ○ Random      ○ Custom                     ║
+║     ● Red    ● Blue   ● Green  ● Yellow ● White  ● Gold   ● Silver             ║
+║     ● Rose   ● Lavndr ● Peach  ● Mint   ● Coral  ○ Random ○ Custom             ║
 ║                                                                                ║
 ║     Custom Hex (appears when Custom selected):                                 ║
 ║     ┌──────────────────────────────────────┐                                   ║
@@ -225,14 +225,18 @@ graph LR
 
 | Name | Hex | Visual |
 |---|---|---|
-| Frost | `#88C0D0` | Cool blue |
-| Coral | `#D08770` | Warm orange |
-| Mint | `#A3BE8C` | Soft green |
-| Lavender | `#B48EAD` | Purple-pink |
-| Peach | `#EBCB8B` | Warm yellow |
-| Gold | `#D4A72C` | Rich gold |
-| Rose | `#BF616A` | Soft red |
-| White | `#ECEFF4` | Snow storm white |
+| Red | `#FF3B30` | Vibrant Red |
+| Blue | `#007AFF` | Vibrant Blue |
+| Green | `#34C759` | Vibrant Green |
+| Yellow | `#FFCC00` | Vibrant Yellow |
+| White | `#FFFFFF` | Pure White |
+| Gold | `#FFD700` | Golden Yellow |
+| Silver | `#C0C0C0` | Silver Gray |
+| Rose | `#FF2D55` | Vibrant Rose Pink |
+| Lavender | `#AF52DE` | Vibrant Lavender Purple |
+| Peach | `#FF9500` | Peach Orange |
+| Mint | `#00FFC4` | Vibrant Mint Green |
+| Coral | `#FF6F61` | Vibrant Coral Pink |
 | Random | — | Randomly picked from above |
 | Custom | User-defined | Any valid `#RRGGBB` hex code |
 
