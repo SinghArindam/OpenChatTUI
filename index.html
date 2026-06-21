@@ -13,10 +13,26 @@
             --text-charcoal: #2C2A29;
             --text-muted: #5E5B58;
             --accent-rust: #D45F42;
+            --accent-orange: #FF9500;
+            --accent-gold: #FFD700;
             --border-sepia: #E8E2D9;
+            --code-bg: var(--text-charcoal);
+            --code-fg: var(--bg-cream);
+            --code-hover: #1a1918;
             --font-serif: "Georgia", "Times New Roman", serif;
             --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             --font-mono: "Fira Code", "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+        }
+
+        [data-theme="dark"] {
+            --bg-cream: #121212;
+            --text-charcoal: #F5F5F7;
+            --text-muted: #A1A1A6;
+            --border-sepia: #333333;
+            --code-bg: #1C1C1E;
+            --code-fg: #F5F5F7;
+            --code-hover: #2C2C2E;
+            --accent-rust: #E06C4F;
         }
 
         * {
@@ -32,6 +48,7 @@
             line-height: 1.6;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
+            transition: background-color 0.5s ease, color 0.5s ease;
         }
 
         /* Typography */
@@ -76,6 +93,23 @@
             margin: 0 auto;
             font-family: var(--font-serif);
             font-style: italic;
+        }
+
+        .theme-toggle {
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text-charcoal);
+            font-size: 1.8rem;
+            transition: transform 0.5s ease, color 0.5s ease;
+            z-index: 100;
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
         }
 
         .hero-image {
@@ -141,8 +175,8 @@
         }
 
         .code-block {
-            background-color: var(--text-charcoal);
-            color: var(--bg-cream);
+            background-color: var(--code-bg);
+            color: var(--code-fg);
             font-family: var(--font-mono);
             padding: 1.5rem;
             border-radius: 8px;
@@ -156,7 +190,7 @@
 
         .code-block:hover {
             transform: scale(1.02);
-            background-color: #1a1918;
+            background-color: var(--code-hover);
         }
 
         .code-block::after {
@@ -225,12 +259,23 @@
 
 <body>
 
+    <button class="theme-toggle" id="theme-btn" aria-label="Toggle Dark Mode" onclick="toggleTheme()">
+        🌙
+    </button>
+
     <div class="container">
         <header>
-            <h1>OpenChatTUI</h1>
+            <h1>Open<span style="color: var(--accent-orange);">Chat</span><span style="color: var(--accent-gold);">TUI</span></h1>
             <p class="subtitle">Encrypted peer-to-peer terminal chat.<br>No servers. No logs. No traces.</p>
         </header>
 
+        <section class="cta-section" style="margin-top: -2rem; padding: 2rem 0; border: none;">
+            <h2>Start Communicating</h2>
+            <p>Launch immediately in a secure, isolated sandbox using `uv`.</p>
+            <div class="code-block" onclick="copyCode(this)">
+                uv run openchat.py
+            </div>
+        </section>
 
         <section class="features">
             <div class="feature-card">
@@ -274,8 +319,8 @@
 
         <section class="commands" style="margin-bottom: 4rem;">
             <h2 style="text-align: center; margin-bottom: 2rem; font-family: var(--font-serif); font-size: 2.5rem;">Commands Reference</h2>
-            <table style="width: 100%; border-collapse: collapse; background: white; box-shadow: 0 10px 20px rgba(0,0,0,0.05); border-radius: 8px; overflow: hidden;">
-                <tr style="background: var(--text-charcoal); color: white; text-align: left;">
+            <table style="width: 100%; border-collapse: collapse; background: var(--bg-cream); box-shadow: 0 10px 20px rgba(0,0,0,0.05); border-radius: 8px; overflow: hidden; transition: background-color 0.5s ease;">
+                <tr style="background: var(--text-charcoal); color: var(--bg-cream); text-align: left; transition: background-color 0.5s ease, color 0.5s ease;">
                     <th style="padding: 1rem;">Command</th>
                     <th style="padding: 1rem;">Description</th>
                 </tr>
@@ -330,20 +375,24 @@
             </table>
         </section>
 
-        <section class="cta-section">
-            <h2>Start Communicating</h2>
-            <p>Launch immediately in a secure, isolated sandbox using `uv`.</p>
-            <div class="code-block" onclick="copyCode(this)">
-                uv run openchat.py
-            </div>
-        </section>
-
         <footer>
             <p>&copy; 2026 OpenChatTUI. Licensed under MIT.</p>
         </footer>
     </div>
 
     <script>
+        function toggleTheme() {
+            const body = document.body;
+            const btn = document.getElementById("theme-btn");
+            if (body.getAttribute("data-theme") === "dark") {
+                body.removeAttribute("data-theme");
+                btn.textContent = "🌙";
+            } else {
+                body.setAttribute("data-theme", "dark");
+                btn.textContent = "☀️";
+            }
+        }
+
         function copyCode(element) {
             const text = element.innerText;
             navigator.clipboard.writeText(text).then(() => {
