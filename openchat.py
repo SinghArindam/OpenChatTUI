@@ -1414,8 +1414,7 @@ class OpenChatApp(App):
     }
     #cmd-suggestions {
         dock: bottom;
-        height: auto;
-        max-height: 12;
+        height: 12;
         background: #000000;
         color: #FFFFFF;
         border-top: solid #333333;
