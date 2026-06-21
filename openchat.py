@@ -1270,18 +1270,19 @@ class OpenChatApp(App):
         border: tall #FFFFFF;
     }
     Button {
-        background: #FFFFFF;
-        color: #000000;
+        background: #333333;
+        color: #FFFFFF;
         border: none;
         text-style: bold;
         min-width: 16;
     }
     Button:hover {
-        background: #888888;
+        background: #FFFFFF;
         color: #000000;
+        text-style: bold;
     }
     Button:focus {
-        background: #888888;
+        background: #FFFFFF;
         color: #000000;
         text-style: bold;
     }
@@ -1388,7 +1389,7 @@ class OpenChatApp(App):
         color: #FFFFFF;
     }
     #back-login-btn:hover, #back-login-btn:focus {
-        background: #888888;
+        background: #FFFFFF;
         color: #000000;
         text-style: bold;
     }
@@ -1494,20 +1495,20 @@ class OpenChatApp(App):
         min-width: 18;
     }
     #exit-continue {
-        background: #FFFFFF;
-        color: #000000;
+        background: #333333;
+        color: #FFFFFF;
     }
     #exit-continue:hover, #exit-continue:focus {
-        background: #888888;
+        background: #FFFFFF;
         color: #000000;
         text-style: bold;
     }
     #exit-quit {
-        background: #FF3B30;
+        background: #882222;
         color: #FFFFFF;
     }
     #exit-quit:hover, #exit-quit:focus {
-        background: #CC2D25;
+        background: #FF3B30;
         color: #FFFFFF;
         text-style: bold;
     }
