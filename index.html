@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="OpenChatTUI - Encrypted peer-to-peer terminal chat. No servers. No logs. No traces.">
+    <meta name="description"
+        content="OpenChatTUI - Encrypted peer-to-peer terminal chat. No servers. No logs. No traces.">
     <title>OpenChatTUI &mdash; Secure Terminal Chat</title>
     <style>
         :root {
@@ -33,7 +35,9 @@
         }
 
         /* Typography */
-        h1, h2, h3 {
+        h1,
+        h2,
+        h3 {
             font-family: var(--font-serif);
             font-weight: 400;
             line-height: 1.2;
@@ -144,7 +148,7 @@
             border-radius: 8px;
             display: inline-block;
             font-size: 1.1rem;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
             position: relative;
             cursor: pointer;
             transition: transform 0.2s ease, background-color 0.2s ease;
@@ -191,6 +195,7 @@
                 opacity: 0;
                 transform: translateY(20px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -199,13 +204,25 @@
 
         /* Responsive */
         @media (max-width: 768px) {
-            header h1 { font-size: 3rem; }
-            header .subtitle { font-size: 1.25rem; }
-            .cta-section h2 { font-size: 2rem; }
-            .container { padding: 3rem 1.5rem; }
+            header h1 {
+                font-size: 3rem;
+            }
+
+            header .subtitle {
+                font-size: 1.25rem;
+            }
+
+            .cta-section h2 {
+                font-size: 2rem;
+            }
+
+            .container {
+                padding: 3rem 1.5rem;
+            }
         }
     </style>
 </head>
+
 <body>
 
     <div class="container">
@@ -219,15 +236,18 @@
         <section class="features">
             <div class="feature-card">
                 <h3>Absolute Privacy</h3>
-                <p>Everything lives in RAM and dies when you close the app. Messages are end-to-end encrypted directly peer-to-peer using Military-grade AES-256-GCM and X25519 ECDH.</p>
+                <p>Everything lives in RAM and dies when you close the app. Messages are end-to-end encrypted directly
+                    peer-to-peer using Military-grade AES-256-GCM and X25519 ECDH.</p>
             </div>
             <div class="feature-card">
                 <h3>Beautiful Interface</h3>
-                <p>A striking, high-contrast AMOLED UI built entirely in the terminal. Experience dynamic autocomplete, an intelligent escape overlay, and intuitive navigation.</p>
+                <p>A striking, high-contrast AMOLED UI built entirely in the terminal. Experience dynamic autocomplete,
+                    an intelligent escape overlay, and intuitive navigation.</p>
             </div>
             <div class="feature-card">
                 <h3>Zero Configuration</h3>
-                <p>No databases or central servers required. Automatic network discovery via UDP broadcast seamlessly connects you to peers locally, or connect directly via IP address.</p>
+                <p>No databases or central servers required. Automatic network discovery via UDP broadcast seamlessly
+                    connects you to peers locally, or connect directly via IP address.</p>
             </div>
         </section>
 
@@ -259,4 +279,5 @@
         }
     </script>
 </body>
+
 </html>
