@@ -1380,12 +1380,13 @@
 
     <!-- Interactive Scripts -->
     <script>
-        // Set Theme on script loading (prevents flash of white)
+        // Set Theme on script loading (prevents flash of background colors)
         (function () {
             const savedTheme = localStorage.getItem("theme");
-            const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-            if (savedTheme === "dark" || (!savedTheme && prefersDark)) {
+            if (savedTheme === "dark") {
                 document.documentElement.setAttribute("data-theme", "dark");
+            } else {
+                document.documentElement.removeAttribute("data-theme");
             }
         })();
 
