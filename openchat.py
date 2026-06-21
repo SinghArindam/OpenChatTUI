@@ -86,6 +86,7 @@ __version__ = "1.0.0"
 
 COMMANDS = [
     "/lobby",
+    "/login",
     "/save txt",
     "/save html",
     "/clear",
@@ -658,7 +659,7 @@ class LoginScreen(Screen):
                                     id="hex-in", max_length=7)
                     yield Button("Continue", id="go-btn",
                                  variant="primary")
-                    yield Static(
+                    yield Label(
                         "esc: menu  ·  ctrl+q: emergency quit  ·  e2ee · zero footprint",
                         id="tagline",
                     )
@@ -742,7 +743,8 @@ class LobbyScreen(Screen):
                             yield Button("Join Room",
                                          id="join-btn",
                                          variant="primary")
-            yield Static(
+                        yield Button("Back to Login", id="back-login-btn")
+            yield Label(
                 "  AES-256-GCM + X25519 ECDH · ESC: Menu · Ctrl+Q: Emergency Quit",
                 id="lobby-ftr",
             )
@@ -774,6 +776,10 @@ class LobbyScreen(Screen):
     @on(Input.Submitted, "#join-in")
     def _enter_join(self, ev):
         self._join(None)
+
+    @on(Button.Pressed, "#back-login-btn")
+    def _back_login(self, ev):
+        self.app.pop_screen()
 
 
 # ═══════════════════════════════════════════════════════════════
@@ -1019,6 +1025,8 @@ class ChatScreen(Screen):
             self._c_verify(arg)
         elif cmd == "/lobby":
             await self._c_lobby()
+        elif cmd == "/login":
+            await self._c_login_cmd()
         elif cmd == "/exit":
             await self._c_exit()
         elif cmd == "/help":
@@ -1147,6 +1155,20 @@ class ChatScreen(Screen):
         self._sys(f"{peer.name}'s fingerprint:", peer.color)
         self._sys(f"  {fp}", SYS_PRIMARY)
 
+    async def _c_login_cmd(self):
+        self._sys("Disconnecting and returning to Login...", SYS_MUTED)
+        await asyncio.sleep(0.2)
+        if self.app.net:
+            try:
+                await self.app.net.stop()
+            except Exception:
+                pass
+            self.app.net = None
+        self.app.room_name = ""
+        self._hist.clear()
+        self.app.pop_screen()
+        self.app.pop_screen()
+
     async def _c_lobby(self):
         self._sys("Disconnecting and returning to Lobby...", SYS_MUTED)
         await asyncio.sleep(0.2)
@@ -1176,6 +1198,7 @@ class ChatScreen(Screen):
             ("/fingerprint",      "Show your Ed25519 fingerprint"),
             ("/verify <ID>",      "Show a peer's fingerprint"),
             ("/lobby",            "Disconnect and return to Lobby screen"),
+            ("/login",            "Disconnect and return to Login screen"),
             ("/exit",             "Secure wipe and quit"),
         ]
         self._sys("Available commands:", SYS_PRIMARY)
@@ -1202,6 +1225,7 @@ class ExitMenuScreen(ModalScreen):
             with Horizontal(id="exit-menu-buttons"):
                 yield Button("Continue Chat", id="exit-continue")
                 yield Button("Secure Quit", id="exit-quit")
+            yield Label("ESC: Continue  ·  Ctrl+Q: Secure Quit", id="exit-menu-tagline")
 
     def on_mount(self):
         self.query_one("#exit-continue", Button).focus()
@@ -1259,6 +1283,7 @@ class OpenChatApp(App):
     Button:focus {
         background: #888888;
         color: #000000;
+        text-style: bold;
     }
     RadioSet {
         background: transparent;
@@ -1355,6 +1380,17 @@ class OpenChatApp(App):
         padding: 1 0;
         text-align: center;
         border-top: solid #333333;
+    }
+    #back-login-btn {
+        width: 100%;
+        margin-top: 1;
+        background: #333333;
+        color: #FFFFFF;
+    }
+    #back-login-btn:hover, #back-login-btn:focus {
+        background: #888888;
+        color: #000000;
+        text-style: bold;
     }
 
     /* ═══════════════════════════════════════════════════════ */
@@ -1464,6 +1500,7 @@ class OpenChatApp(App):
     #exit-continue:hover, #exit-continue:focus {
         background: #888888;
         color: #000000;
+        text-style: bold;
     }
     #exit-quit {
         background: #FF3B30;
@@ -1472,6 +1509,13 @@ class OpenChatApp(App):
     #exit-quit:hover, #exit-quit:focus {
         background: #CC2D25;
         color: #FFFFFF;
+        text-style: bold;
+    }
+    #exit-menu-tagline {
+        color: #888888;
+        text-align: center;
+        width: 100%;
+        margin-top: 1;
     }
     """
 
