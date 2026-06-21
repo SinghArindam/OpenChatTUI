@@ -89,15 +89,25 @@ MCAST_GROUP = "239.0.0.1"
 MAX_FRAME = 10 * 1024 * 1024  # 10 MB
 
 COLORS = {
-    "Frost":    "#88C0D0",
-    "Coral":    "#D08770",
-    "Mint":     "#A3BE8C",
-    "Lavender": "#B48EAD",
-    "Peach":    "#EBCB8B",
-    "Gold":     "#D4A72C",
-    "Rose":     "#BF616A",
-    "White":    "#ECEFF4",
+    "Red":      "#FF3B30",
+    "Blue":     "#007AFF",
+    "Green":    "#34C759",
+    "Yellow":   "#FFCC00",
+    "White":    "#FFFFFF",
+    "Gold":     "#FFD700",
+    "Silver":   "#C0C0C0",
+    "Rose":     "#FF2D55",
+    "Lavender": "#AF52DE",
+    "Peach":    "#FF9500",
+    "Mint":     "#00FFC4",
+    "Coral":    "#FF6F61",
 }
+
+SYS_MUTED = "#888888"
+SYS_WHITE = "#FFFFFF"
+SYS_SUCCESS = "#34C759"
+SYS_ERROR = "#FF3B30"
+SYS_PRIMARY = "#007AFF"
 
 LOGO = """\
   ██████  ██████  ██████  ██   ██      ██████  ██   ██  █████  ███████
@@ -802,10 +812,10 @@ class ChatScreen(Screen):
         await a.net.start(room)
 
         if a.join_target:
-            self._sys(f"Searching for {a.join_target}...", "#4C566A")
+            self._sys(f"Searching for {a.join_target}...", SYS_MUTED)
             ok = await a.net.query(a.join_target)
             if ok:
-                self._sys("Connected.", "#A3BE8C")
+                self._sys("Connected.", SYS_SUCCESS)
                 if a.net.room:
                     a.room_name = a.net.room
                 self._hdr()
@@ -813,14 +823,14 @@ class ChatScreen(Screen):
                 self._sys(
                     f"Could not find {a.join_target}. "
                     "Peer may be offline or on a different network.",
-                    "#BF616A",
+                    SYS_ERROR,
                 )
         else:
             self._sys(
                 f"Room created. Share your Chat ID:  {a.user_cid}",
-                "#A3BE8C",
+                SYS_SUCCESS,
             )
-            self._sys("Waiting for peers to join...", "#4C566A")
+            self._sys("Waiting for peers to join...", SYS_MUTED)
 
     # ── Network callbacks ─────────────────────────────────────
 
@@ -853,7 +863,7 @@ class ChatScreen(Screen):
         log.write(t)
         self._hist.append(("msg", name, color, text, ts))
 
-    def _sys(self, msg: str, color: str = "#4C566A"):
+    def _sys(self, msg: str, color: str = SYS_MUTED):
         log = self.query_one("#chat-log", RichLog)
         t = Text()
         t.append(f"  {now_hm()}  ", style="dim")
@@ -915,12 +925,12 @@ class ChatScreen(Screen):
             self._c_save(arg)
         elif cmd == "/clear":
             self.query_one("#chat-log", RichLog).clear()
-            self._sys("Screen cleared. History preserved.", "#4C566A")
+            self._sys("Screen cleared. History preserved.", SYS_MUTED)
         elif cmd == "/peers":
             self._c_peers()
         elif cmd == "/fingerprint":
             fp = self.app.crypto.fingerprint if self.app.crypto else "?"
-            self._sys(f"Your fingerprint: {fp}", "#88C0D0")
+            self._sys(f"Your fingerprint: {fp}", SYS_PRIMARY)
         elif cmd == "/verify":
             self._c_verify(arg)
         elif cmd == "/exit":
@@ -928,27 +938,27 @@ class ChatScreen(Screen):
         elif cmd == "/help":
             self._c_help()
         else:
-            self._sys(f"Unknown: {cmd}  — type /help", "#BF616A")
+            self._sys(f"Unknown: {cmd}  — type /help", SYS_ERROR)
 
     async def _c_join(self, arg: str):
         tid = arg.strip().upper()
         if not tid or not re.match(r"^[A-Z0-9]{6,8}$", tid):
-            self._sys("Usage: /join <CHAT_ID>", "#BF616A")
+            self._sys("Usage: /join <CHAT_ID>", SYS_ERROR)
             return
         if not self.app.net:
             return
-        self._sys(f"Searching for {tid}...", "#4C566A")
+        self._sys(f"Searching for {tid}...", SYS_MUTED)
         ok = await self.app.net.query(tid)
         self._sys("Connected." if ok else f"Could not find {tid}.",
-                  "#A3BE8C" if ok else "#BF616A")
+                  SYS_SUCCESS if ok else SYS_ERROR)
 
     async def _c_connect(self, arg: str):
         m = re.match(r"^([\d.]+):(\d+)$", arg.strip())
         if not m:
-            self._sys("Usage: /connect <IP:PORT>", "#BF616A")
+            self._sys("Usage: /connect <IP:PORT>", SYS_ERROR)
             return
         ip, port = m.group(1), int(m.group(2))
-        self._sys(f"Connecting to {ip}:{port}...", "#4C566A")
+        self._sys(f"Connecting to {ip}:{port}...", SYS_MUTED)
         if self.app.net:
             await self.app.net.connect(ip, port)
 
@@ -959,7 +969,7 @@ class ChatScreen(Screen):
         elif fmt == "html":
             self._save_html()
         else:
-            self._sys("Usage: /save txt  or  /save html", "#BF616A")
+            self._sys("Usage: /save txt  or  /save html", SYS_ERROR)
 
     def _save_txt(self):
         ts = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -973,7 +983,7 @@ class ChatScreen(Screen):
                 lines.append(f"[{stamp}] {text}")
         with open(fn, "w", encoding="utf-8") as f:
             f.write("\n".join(lines) + "\n")
-        self._sys(f"Saved to {fn}", "#A3BE8C")
+        self._sys(f"Saved to {fn}", SYS_SUCCESS)
 
     def _save_html(self):
         ts = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -1000,27 +1010,27 @@ class ChatScreen(Screen):
             f'<title>OpenChatTUI — '
             f'{html_escape(self.app.room_name)}</title>'
             '<style>'
-            'body{background:#2E3440;color:#D8DEE9;'
+            'body{background:#000000;color:#FFFFFF;'
             "font-family:'Cascadia Code','Fira Code',"
             "'Consolas',monospace;"
             'max-width:800px;margin:40px auto;padding:0 20px}'
-            'h1{color:#88C0D0;font-size:1.4em}'
-            'hr{border:1px solid #4C566A}'
+            'h1{color:#FFFFFF;font-size:1.4em}'
+            'hr{border:1px solid #333333}'
             '.m{padding:6px 12px;margin:2px 0;border-radius:4px;'
-            'background:#3B4252}'
+            'background:#111111}'
             '.s{padding:4px 12px;margin:2px 0;font-style:italic}'
-            '.t{color:#4C566A;font-size:.85em;margin-right:8px}'
+            '.t{color:#888888;font-size:.85em;margin-right:8px}'
             '</style></head><body>'
             f'<h1>OpenChatTUI — '
             f'{html_escape(self.app.room_name)}</h1>'
-            f'<p style="color:#4C566A">Exported: '
+            f'<p style="color:#888888">Exported: '
             f'{datetime.now().strftime("%Y-%m-%d %H:%M")}</p><hr>'
             + "".join(msgs)
             + '</body></html>'
         )
         with open(fn, "w", encoding="utf-8") as f:
             f.write(html)
-        self._sys(f"Saved to {fn}", "#A3BE8C")
+        self._sys(f"Saved to {fn}", SYS_SUCCESS)
 
     def _c_peers(self):
         a = self.app
@@ -1035,24 +1045,24 @@ class ChatScreen(Screen):
             self._sys(f"  {p.name}  [{p.id}]  {fp[:19]}...",
                       p.color)
         if not net.peers:
-            self._sys("  No peers connected.", "#4C566A")
+            self._sys("  No peers connected.", SYS_MUTED)
 
     def _c_verify(self, arg: str):
         tid = arg.strip().upper()
         a = self.app
         if not a.net or not tid:
-            self._sys("Usage: /verify <CHAT_ID>", "#BF616A")
+            self._sys("Usage: /verify <CHAT_ID>", SYS_ERROR)
             return
         peer = a.net.peers.get(tid)
         if not peer:
-            self._sys(f"Peer {tid} not found.", "#BF616A")
+            self._sys(f"Peer {tid} not found.", SYS_ERROR)
             return
         fp = a.crypto.peer_fp(peer.sign_pub)
         self._sys(f"{peer.name}'s fingerprint:", peer.color)
-        self._sys(f"  {fp}", "#ECEFF4")
+        self._sys(f"  {fp}", SYS_PRIMARY)
 
     async def _c_exit(self):
-        self._sys("Secure wipe complete. Goodbye.", "#A3BE8C")
+        self._sys("Secure wipe complete. Goodbye.", SYS_SUCCESS)
         await asyncio.sleep(0.5)
         await self.app.exit_secure()
 
@@ -1068,11 +1078,11 @@ class ChatScreen(Screen):
             ("/verify <ID>",      "Show a peer's fingerprint"),
             ("/exit",             "Secure wipe and quit"),
         ]
-        self._sys("Available commands:", "#88C0D0")
+        self._sys("Available commands:", SYS_PRIMARY)
         for c, d in cmds:
             t = Text()
-            t.append(f"    {c:22s}", style="#88C0D0")
-            t.append(f" {d}", style="#D8DEE9")
+            t.append(f"    {c:22s}", style=SYS_PRIMARY)
+            t.append(f" {d}", style="#FFFFFF")
             self.query_one("#chat-log", RichLog).write(t)
 
     async def action_quit_app(self):
@@ -1093,31 +1103,31 @@ class OpenChatApp(App):
     /*  Global                                                 */
     /* ═══════════════════════════════════════════════════════ */
     Screen {
-        background: #2E3440;
-        color: #D8DEE9;
+        background: #000000;
+        color: #FFFFFF;
     }
     Input {
-        background: #2E3440;
-        border: tall #4C566A;
-        color: #D8DEE9;
+        background: #000000;
+        border: tall #333333;
+        color: #FFFFFF;
     }
     Input:focus {
-        border: tall #88C0D0;
+        border: tall #FFFFFF;
     }
     Button {
-        background: #5E81AC;
-        color: #ECEFF4;
+        background: #FFFFFF;
+        color: #000000;
         border: none;
         text-style: bold;
         min-width: 16;
     }
     Button:hover {
-        background: #88C0D0;
-        color: #2E3440;
+        background: #888888;
+        color: #000000;
     }
     Button:focus {
-        background: #88C0D0;
-        color: #2E3440;
+        background: #888888;
+        color: #000000;
     }
     RadioSet {
         background: transparent;
@@ -1131,26 +1141,26 @@ class OpenChatApp(App):
     #login-card {
         width: 82;
         height: auto;
-        background: #3B4252;
-        border: round #4C566A;
+        background: #000000;
+        border: round #333333;
         padding: 1 2;
     }
     #logo {
-        color: #88C0D0;
+        color: #FFFFFF;
         text-style: bold;
         text-align: center;
     }
     .sep {
-        color: #4C566A;
+        color: #333333;
         text-align: center;
     }
     .lbl {
-        color: #81A1C1;
+        color: #888888;
         padding: 1 0 0 0;
     }
     #clr-pick {
         layout: grid;
-        grid-size: 5 2;
+        grid-size: 7 2;
         height: 5;
         margin: 1 0;
     }
@@ -1166,7 +1176,7 @@ class OpenChatApp(App):
     }
     #tagline {
         text-align: center;
-        color: #4C566A;
+        color: #888888;
         padding: 1 0 0 0;
     }
 
@@ -1179,25 +1189,25 @@ class OpenChatApp(App):
     #lobby-hdr {
         dock: top;
         height: 3;
-        background: #3B4252;
-        color: #88C0D0;
+        background: #000000;
+        color: #FFFFFF;
         text-style: bold;
         padding: 1 0;
-        border-bottom: solid #4C566A;
+        border-bottom: solid #333333;
     }
     #lobby-cards {
         width: 82;
         height: auto;
     }
     .lcard {
-        background: #3B4252;
-        border: round #4C566A;
+        background: #000000;
+        border: round #333333;
         padding: 1 2;
         margin: 1 0;
         height: auto;
     }
     .card-title {
-        color: #88C0D0;
+        color: #FFFFFF;
         text-style: bold;
         padding: 0 0 1 0;
     }
@@ -1210,10 +1220,10 @@ class OpenChatApp(App):
     #lobby-ftr {
         dock: bottom;
         height: 3;
-        color: #4C566A;
+        color: #888888;
         padding: 1 0;
         text-align: center;
-        border-top: solid #4C566A;
+        border-top: solid #333333;
     }
 
     /* ═══════════════════════════════════════════════════════ */
@@ -1225,49 +1235,49 @@ class OpenChatApp(App):
     #chat-hdr {
         dock: top;
         height: 3;
-        background: #3B4252;
-        color: #88C0D0;
+        background: #000000;
+        color: #FFFFFF;
         text-style: bold;
         padding: 1 0;
-        border-bottom: solid #4C566A;
+        border-bottom: solid #333333;
     }
     #chat-body {
         height: 1fr;
     }
     #chat-log {
         width: 1fr;
-        background: #2E3440;
+        background: #000000;
         border: none;
         padding: 0;
-        scrollbar-color: #4C566A;
-        scrollbar-color-hover: #88C0D0;
-        scrollbar-color-active: #88C0D0;
+        scrollbar-color: #333333;
+        scrollbar-color-hover: #FFFFFF;
+        scrollbar-color-active: #FFFFFF;
     }
     #sidebar {
         width: 24;
-        background: #3B4252;
-        border-left: solid #4C566A;
+        background: #000000;
+        border-left: solid #333333;
         padding: 1 0;
     }
     #input-bar {
         dock: bottom;
         height: 3;
-        background: #3B4252;
-        border-top: solid #4C566A;
+        background: #000000;
+        border-top: solid #333333;
     }
     #msg-in {
         width: 1fr;
         border: none;
-        background: #3B4252;
+        background: #000000;
     }
     #msg-in:focus {
         border: none;
     }
     #enc-badge {
         width: 10;
-        color: #A3BE8C;
+        color: #FFFFFF;
         text-style: bold;
-        background: #3B4252;
+        background: #000000;
         padding: 1 0;
         text-align: center;
     }
