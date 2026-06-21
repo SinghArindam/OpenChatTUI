@@ -925,6 +925,7 @@ class ChatScreen(Screen):
         self._curr_matches = []
 
         if text.startswith("/"):
+            self._write(self.app.user_name, self.app.user_color, text, time.time())
             await self._cmd(text)
         else:
             self._write(self.app.user_name, self.app.user_color,
