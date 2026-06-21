@@ -6,33 +6,98 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description"
         content="OpenChatTUI - Encrypted peer-to-peer terminal chat. No servers. No logs. No traces.">
-    <title>OpenChatTUI &mdash; Secure Terminal Chat</title>
+    <title>OpenChatTUI &mdash; Secure P2P Terminal Chat</title>
+    
+    <!-- Premium Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
     <style>
         :root {
-            --bg-cream: #FAF9F6;
-            --text-charcoal: #2C2A29;
-            --text-muted: #5E5B58;
-            --accent-rust: #D45F42;
-            --accent-orange: #FF9500;
-            --accent-gold: #FFD700;
-            --border-sepia: #E8E2D9;
-            --code-bg: var(--text-charcoal);
-            --code-fg: var(--bg-cream);
-            --code-hover: #1a1918;
-            --font-serif: "Georgia", "Times New Roman", serif;
-            --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            --font-mono: "Fira Code", "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+            /* Warm Editorial Cream Palette */
+            --bg-base: hsl(43, 30%, 96%);
+            --bg-card: hsl(43, 20%, 94%);
+            --text-primary: hsl(20, 6%, 12%);
+            --text-secondary: hsl(20, 4%, 32%);
+            --text-muted: hsl(20, 4%, 50%);
+            
+            /* Accents */
+            --accent-peach: hsl(18, 85%, 55%);
+            --accent-gold: hsl(45, 95%, 48%);
+            --accent-rust: hsl(18, 65%, 46%);
+            --accent-success: hsl(140, 50%, 40%);
+            
+            /* UI Elements */
+            --border-sepia: hsl(40, 15%, 85%);
+            --border-focus: var(--accent-rust);
+            
+            /* Monospace Terminal */
+            --terminal-bg: hsl(20, 6%, 10%);
+            --terminal-fg: hsl(43, 30%, 96%);
+            --terminal-border: hsl(20, 6%, 15%);
+            
+            /* Fonts */
+            --font-serif: "Lora", "Georgia", serif;
+            --font-sans: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            --font-mono: "JetBrains Mono", "Fira Code", monospace;
+            
+            /* Theme Switcher variables */
+            --ripple-x: 50vw;
+            --ripple-y: 50vh;
+            --ripple-r: 100vmax;
         }
 
         [data-theme="dark"] {
-            --bg-cream: #121212;
-            --text-charcoal: #F5F5F7;
-            --text-muted: #A1A1A6;
-            --border-sepia: #333333;
-            --code-bg: #1C1C1E;
-            --code-fg: #F5F5F7;
-            --code-hover: #2C2C2E;
-            --accent-rust: #E06C4F;
+            /* Rich Warm Ebony Palette */
+            --bg-base: hsl(20, 6%, 7%);
+            --bg-card: hsl(20, 6%, 11%);
+            --text-primary: hsl(30, 10%, 90%);
+            --text-secondary: hsl(30, 5%, 72%);
+            --text-muted: hsl(30, 4%, 52%);
+            
+            /* Accents */
+            --accent-peach: hsl(18, 90%, 62%);
+            --accent-gold: hsl(45, 95%, 55%);
+            --accent-rust: hsl(18, 75%, 58%);
+            --accent-success: hsl(140, 65%, 55%);
+            
+            /* UI Elements */
+            --border-sepia: hsl(20, 8%, 18%);
+            
+            /* Monospace Terminal */
+            --terminal-bg: hsl(20, 8%, 4%);
+            --terminal-fg: hsl(30, 10%, 92%);
+            --terminal-border: hsl(20, 8%, 10%);
+        }
+
+        /* View Transition circular ripple setup */
+        ::view-transition-image-pair(root) {
+            isolation: auto;
+        }
+
+        ::view-transition-old(root),
+        ::view-transition-new(root) {
+            animation: none;
+            mix-blend-mode: normal;
+        }
+
+        ::view-transition-old(root) {
+            z-index: 1;
+        }
+
+        ::view-transition-new(root) {
+            z-index: 9999;
+            animation: ripple-expansion 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes ripple-expansion {
+            from {
+                clip-path: circle(0px at var(--ripple-x) var(--ripple-y));
+            }
+            to {
+                clip-path: circle(var(--ripple-r) at var(--ripple-x) var(--ripple-y));
+            }
         }
 
         * {
@@ -41,217 +106,858 @@
             padding: 0;
         }
 
-        body {
-            background-color: var(--bg-cream);
-            color: var(--text-charcoal);
-            font-family: var(--font-sans);
-            line-height: 1.6;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-            transition: background-color 0.5s ease, color 0.5s ease;
+        html {
+            scroll-behavior: smooth;
         }
 
-        /* Typography */
-        h1,
-        h2,
-        h3 {
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-primary);
+            font-family: var(--font-sans);
+            line-height: 1.7;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Typography & Layout */
+        h1, h2, h3, h4 {
             font-family: var(--font-serif);
-            font-weight: 400;
-            line-height: 1.2;
-            color: var(--text-charcoal);
-            letter-spacing: -0.02em;
+            font-weight: 500;
+            line-height: 1.25;
+            color: var(--text-primary);
+            letter-spacing: -0.015em;
         }
 
         p {
-            font-size: 1.125rem;
+            color: var(--text-secondary);
+            font-size: 1.05rem;
+        }
+
+        a {
+            color: var(--text-primary);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        a:hover {
+            color: var(--accent-rust);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        /* Header Navigation */
+        header.nav-header {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background-color: hsla(43, 30%, 96%, 0.8);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border-sepia);
+            transition: background-color 0.4s ease, border-color 0.4s ease;
+        }
+
+        [data-theme="dark"] header.nav-header {
+            background-color: hsla(20, 6%, 7%, 0.85);
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 4.5rem;
+        }
+
+        .logo {
+            font-size: 1.4rem;
+            font-weight: 800;
+            font-family: var(--font-sans);
+            letter-spacing: -0.03em;
+        }
+
+        .logo-chat {
+            color: var(--accent-peach);
+            transition: color 0.3s ease;
+        }
+
+        .logo-tui {
+            color: var(--accent-gold);
+            transition: color 0.3s ease;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2.5rem;
+            align-items: center;
+        }
+
+        .nav-link {
+            font-size: 0.95rem;
+            font-weight: 550;
+            color: var(--text-secondary);
+        }
+
+        .nav-link:hover {
+            color: var(--text-primary);
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .theme-toggle-btn {
+            background: none;
+            border: 1px solid var(--border-sepia);
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
+            cursor: pointer;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: border-color 0.3s, transform 0.2s, background-color 0.3s;
+        }
+
+        .theme-toggle-btn:hover {
+            border-color: var(--text-primary);
+            background-color: var(--bg-card);
+            transform: scale(1.05);
+        }
+
+        .github-link-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            border: 1px solid var(--text-primary);
+            font-weight: 600;
+            font-size: 0.9rem;
+            background-color: var(--text-primary);
+            color: var(--bg-base);
+            transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+        }
+
+        .github-link-btn:hover {
+            background-color: transparent;
+            color: var(--text-primary);
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 6rem 0 4rem;
+            text-align: center;
+        }
+
+        .hero-title {
+            font-size: 4rem;
+            font-weight: 400;
+            margin-bottom: 1.5rem;
+            letter-spacing: -0.03em;
+        }
+
+        .hero-subtitle {
+            font-size: 1.5rem;
+            font-family: var(--font-serif);
+            font-style: italic;
+            color: var(--text-secondary);
+            max-width: 750px;
+            margin: 0 auto 3rem;
+            line-height: 1.5;
+        }
+
+        .hero-badge-container {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 3.5rem;
+            flex-wrap: wrap;
+        }
+
+        .hero-badge {
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            padding: 0.25rem 0.85rem;
+            border-radius: 1rem;
+            border: 1px solid var(--border-sepia);
+            color: var(--text-secondary);
+            background-color: var(--bg-card);
+        }
+
+        .cta-btn-primary {
+            display: inline-block;
+            padding: 1rem 2.2rem;
+            font-size: 1.05rem;
+            font-weight: 600;
+            border-radius: 3rem;
+            background-color: var(--accent-rust);
+            color: white;
+            box-shadow: 0 10px 25px rgba(200, 90, 50, 0.2);
+            transition: transform 0.2s, box-shadow 0.2s, background-color 0.3s;
+        }
+
+        .cta-btn-primary:hover {
+            color: white;
+            background-color: hsl(18, 65%, 40%);
+            transform: translateY(-2px);
+            box-shadow: 0 15px 30px rgba(200, 90, 50, 0.35);
+        }
+
+        /* Interactive Showcase Grid */
+        .showcase-grid {
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr;
+            gap: 3.5rem;
+            margin: 4rem 0 7rem;
+            align-items: start;
+        }
+
+        /* Quickstart Panel */
+        .quickstart-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-sepia);
+            border-radius: 16px;
+            padding: 2.25rem;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.02);
+            position: sticky;
+            top: 6.5rem;
+        }
+
+        .quickstart-title {
+            font-size: 1.75rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .quickstart-desc {
+            font-size: 0.95rem;
             color: var(--text-muted);
+            margin-bottom: 2rem;
+        }
+
+        .qs-tab-headers {
+            display: flex;
+            border-bottom: 1px solid var(--border-sepia);
+            margin-bottom: 1.5rem;
+            gap: 1.5rem;
+        }
+
+        .qs-tab-btn {
+            background: none;
+            border: none;
+            padding: 0.6rem 0;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            cursor: pointer;
+            position: relative;
+            transition: color 0.3s;
+        }
+
+        .qs-tab-btn.active {
+            color: var(--text-primary);
+        }
+
+        .qs-tab-btn.active::after {
+            content: "";
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: var(--accent-rust);
+            animation: slideIn 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        .qs-content-block {
+            display: none;
+        }
+
+        .qs-content-block.active {
+            display: block;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .step-item {
             margin-bottom: 1.5rem;
         }
 
-        /* Layout */
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 4rem 2rem;
-        }
-
-        header {
-            text-align: center;
-            margin-bottom: 4rem;
-            animation: fadeUp 0.8s ease-out forwards;
-        }
-
-        header h1 {
-            font-size: 4rem;
-            margin-bottom: 1rem;
-        }
-
-        header .subtitle {
-            font-size: 1.5rem;
-            color: var(--text-charcoal);
-            max-width: 600px;
-            margin: 0 auto;
-            font-family: var(--font-serif);
-            font-style: italic;
-        }
-
-        .theme-toggle {
-            position: absolute;
-            top: 2rem;
-            right: 2rem;
-            background: none;
-            border: none;
-            cursor: pointer;
-            color: var(--text-charcoal);
-            font-size: 1.8rem;
-            transition: transform 0.5s ease, color 0.5s ease;
-            z-index: 100;
-        }
-
-        .theme-toggle:hover {
-            transform: scale(1.1) rotate(15deg);
-        }
-
-        .hero-image {
-            width: 100%;
-            height: auto;
-            border-radius: 12px;
-            margin-bottom: 4rem;
-            box-shadow: 0 20px 40px rgba(44, 42, 41, 0.08);
-            transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.5s ease;
-            animation: fadeUp 1s ease-out 0.2s forwards;
-            opacity: 0;
-        }
-
-        .hero-image:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 30px 60px rgba(44, 42, 41, 0.12);
-        }
-
-        /* Grid */
-        .features {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 3rem;
-            margin-bottom: 4rem;
-            animation: fadeUp 1s ease-out 0.4s forwards;
-            opacity: 0;
-        }
-
-        .feature-card {
-            padding-top: 1.5rem;
-            border-top: 2px solid var(--border-sepia);
-            transition: border-color 0.3s ease;
-        }
-
-        .feature-card:hover {
-            border-color: var(--accent-rust);
-        }
-
-        .feature-card h3 {
-            font-size: 1.5rem;
-            margin-bottom: 1rem;
-        }
-
-        .feature-card p {
-            font-size: 1rem;
+        .step-item:last-child {
             margin-bottom: 0;
         }
 
-        /* CTA Section */
-        .cta-section {
-            text-align: center;
-            padding: 4rem 0;
-            border-top: 1px solid var(--border-sepia);
-            border-bottom: 1px solid var(--border-sepia);
-            margin-bottom: 4rem;
-            animation: fadeUp 1s ease-out 0.6s forwards;
-            opacity: 0;
+        .step-label {
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+            display: block;
         }
 
-        .cta-section h2 {
-            font-size: 2.5rem;
+        .terminal-cmd-box {
+            background-color: var(--terminal-bg);
+            color: var(--terminal-fg);
+            border: 1px solid var(--terminal-border);
+            padding: 1.1rem;
+            border-radius: 8px;
+            font-family: var(--font-mono);
+            font-size: 0.95rem;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .cmd-text {
+            white-space: nowrap;
+            overflow-x: auto;
+            padding-right: 2.5rem;
+            user-select: all;
+        }
+
+        .cmd-text::-webkit-scrollbar {
+            height: 4px;
+        }
+        
+        .cmd-text::-webkit-scrollbar-thumb {
+            background: var(--border-sepia);
+            border-radius: 2px;
+        }
+
+        .copy-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.4rem;
+            border-radius: 4px;
+            transition: color 0.2s, background-color 0.2s, transform 0.1s;
+        }
+
+        .copy-btn:hover {
+            color: var(--terminal-fg);
+            background-color: rgba(255, 255, 255, 0.08);
+        }
+
+        .copy-btn:active {
+            transform: scale(0.92);
+        }
+
+        .copy-btn svg.success-icon {
+            display: none;
+            color: var(--accent-success);
+        }
+
+        .copy-btn.copied svg.copy-icon {
+            display: none;
+        }
+
+        .copy-btn.copied svg.success-icon {
+            display: block;
+        }
+
+        .copy-tooltip {
+            position: absolute;
+            right: 3.5rem;
+            background-color: var(--accent-rust);
+            color: white;
+            padding: 0.25rem 0.6rem;
+            border-radius: 4px;
+            font-family: var(--font-sans);
+            font-size: 0.75rem;
+            font-weight: 600;
+            opacity: 0;
+            transform: translateY(5px);
+            pointer-events: none;
+            transition: opacity 0.2s, transform 0.2s;
+        }
+
+        .copy-tooltip.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Terminal Screenshot Showcase */
+        .terminal-mockup {
+            background-color: var(--terminal-bg);
+            border: 1px solid var(--terminal-border);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 25px 55px rgba(0, 0, 0, 0.12);
+        }
+
+        .terminal-titlebar {
+            background-color: hsl(20, 6%, 13%);
+            padding: 0.85rem 1.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--terminal-border);
+        }
+
+        .terminal-dots {
+            display: flex;
+            gap: 0.45rem;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .dot-red { background-color: hsl(0, 75%, 60%); }
+        .dot-yellow { background-color: hsl(40, 80%, 60%); }
+        .dot-green { background-color: hsl(120, 60%, 55%); }
+
+        .terminal-filename {
+            color: var(--text-muted);
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .terminal-actions-placeholder {
+            width: 42px;
+        }
+
+        .terminal-tabs {
+            display: flex;
+            background-color: hsl(20, 6%, 8%);
+            border-bottom: 1px solid var(--terminal-border);
+            overflow-x: auto;
+        }
+
+        .terminal-tab-btn {
+            background: none;
+            border: none;
+            border-right: 1px solid var(--terminal-border);
+            padding: 0.75rem 1.25rem;
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: background-color 0.2s, color 0.2s;
+            white-space: nowrap;
+        }
+
+        .terminal-tab-btn:hover {
+            background-color: rgba(255, 255, 255, 0.02);
+            color: var(--terminal-fg);
+        }
+
+        .terminal-tab-btn.active {
+            background-color: var(--terminal-bg);
+            color: var(--accent-peach);
+            border-bottom: 1px solid transparent;
+            font-weight: 600;
+        }
+
+        .terminal-body {
+            padding: 1rem;
+            position: relative;
+            aspect-ratio: 120 / 38;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--terminal-bg);
+        }
+
+        .terminal-screenshot {
+            max-width: 100%;
+            max-height: 100%;
+            border-radius: 4px;
+            display: none;
+            object-fit: contain;
+        }
+
+        .terminal-screenshot.active {
+            display: block;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .screenshot-caption-box {
+            padding: 1.5rem 0;
+        }
+
+        .screenshot-caption-title {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            font-family: var(--font-sans);
+            font-weight: 700;
+        }
+
+        .screenshot-caption-desc {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+        }
+
+        /* Features Section */
+        .features-section {
+            padding: 6rem 0;
+            border-top: 1px solid var(--border-sepia);
+        }
+
+        .section-headline-serif {
+            font-size: 2.8rem;
+            text-align: center;
+            margin-bottom: 4.5rem;
+            letter-spacing: -0.02em;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 4rem;
+        }
+
+        .feature-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .feature-number {
+            font-family: var(--font-serif);
+            font-size: 2.2rem;
+            font-style: italic;
+            color: var(--accent-rust);
+            margin-bottom: 1rem;
+            border-bottom: 1px solid var(--border-sepia);
+            padding-bottom: 0.5rem;
+        }
+
+        .feature-item h3 {
+            font-size: 1.45rem;
+            margin-bottom: 1rem;
+            font-family: var(--font-sans);
+            font-weight: 700;
+            letter-spacing: -0.01em;
+        }
+
+        .feature-item p {
+            font-size: 0.98rem;
+            color: var(--text-secondary);
+            line-height: 1.65;
+        }
+
+        /* Security Table / Section */
+        .security-section {
+            padding: 6rem 0;
+            border-top: 1px solid var(--border-sepia);
+        }
+
+        .security-layout {
+            display: grid;
+            grid-template-columns: 0.85fr 1.15fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .security-info h2 {
+            font-size: 2.8rem;
+            margin-bottom: 1.5rem;
+            text-align: left;
+        }
+
+        .security-table-wrapper {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-sepia);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.01);
+        }
+
+        .security-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        .security-table th {
+            background-color: var(--text-primary);
+            color: var(--bg-base);
+            padding: 1.1rem 1.5rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .security-table td {
+            padding: 1.1rem 1.5rem;
+            border-bottom: 1px solid var(--border-sepia);
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+        }
+
+        .security-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .security-table tr {
+            transition: background-color 0.2s;
+        }
+
+        .security-table tr:hover td {
+            background-color: hsla(20, 6%, 50%, 0.04);
+            color: var(--text-primary);
+        }
+
+        .primitive-badge {
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            background-color: var(--bg-base);
+            border: 1px solid var(--border-sepia);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            color: var(--accent-rust);
+            font-weight: 500;
+        }
+
+        /* Commands Browser Section */
+        .commands-section {
+            padding: 6rem 0;
+            border-top: 1px solid var(--border-sepia);
+        }
+
+        .commands-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            max-width: 750px;
+            margin: 0 auto 3rem;
+            align-items: center;
+        }
+
+        .search-box-wrapper {
+            position: relative;
+            width: 100%;
+        }
+
+        .search-box-wrapper svg {
+            position: absolute;
+            left: 1.25rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            pointer-events: none;
+            transition: color 0.2s;
+        }
+
+        .commands-search {
+            width: 100%;
+            padding: 1.1rem 1.25rem 1.1rem 3.25rem;
+            border: 1px solid var(--border-sepia);
+            border-radius: 3rem;
+            background-color: var(--bg-card);
+            color: var(--text-primary);
+            font-family: var(--font-sans);
+            font-size: 1.05rem;
+            transition: border-color 0.3s, box-shadow 0.3s, background-color 0.3s;
+        }
+
+        .commands-search:focus {
+            outline: none;
+            border-color: var(--border-focus);
+            box-shadow: 0 0 0 4px hsla(18, 85%, 55%, 0.1);
+            background-color: var(--bg-base);
+        }
+
+        .commands-search:focus + svg {
+            color: var(--accent-rust);
+        }
+
+        .filter-pills {
+            display: flex;
+            gap: 0.65rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .filter-pill {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-sepia);
+            padding: 0.45rem 1.1rem;
+            border-radius: 2rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+        }
+
+        .filter-pill:hover {
+            border-color: var(--text-primary);
+            color: var(--text-primary);
+        }
+
+        .filter-pill.active {
+            background-color: var(--text-primary);
+            color: var(--bg-base);
+            border-color: var(--text-primary);
+        }
+
+        .commands-table-wrapper {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-sepia);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.01);
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .commands-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        .commands-table th {
+            background-color: var(--text-primary);
+            color: var(--bg-base);
+            padding: 1.1rem 1.5rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .commands-table td {
+            padding: 1.1rem 1.5rem;
+            border-bottom: 1px solid var(--border-sepia);
+            font-size: 0.98rem;
+        }
+
+        .commands-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .cmd-name {
+            font-family: var(--font-mono);
+            color: var(--accent-rust);
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .commands-table tr {
+            transition: background-color 0.2s, opacity 0.2s, transform 0.2s;
+        }
+
+        .commands-table tr.hidden {
+            display: none;
+        }
+
+        .commands-table tr:hover td {
+            background-color: hsla(20, 6%, 50%, 0.04);
+        }
+
+        .no-results-message {
+            display: none;
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-muted);
+            font-family: var(--font-sans);
+            font-size: 1.1rem;
+        }
+
+        .no-results-message.visible {
+            display: block;
+        }
+
+        /* Footer */
+        footer {
+            border-top: 1px solid var(--border-sepia);
+            padding: 4rem 0;
+            text-align: center;
+            background-color: var(--bg-card);
+        }
+
+        .footer-logo {
+            font-size: 1.25rem;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            margin-bottom: 1rem;
+        }
+
+        .footer-text {
+            font-size: 0.9rem;
+            color: var(--text-muted);
             margin-bottom: 1.5rem;
         }
 
-        .code-block {
-            background-color: var(--code-bg);
-            color: var(--code-fg);
-            font-family: var(--font-mono);
-            padding: 1.5rem;
-            border-radius: 8px;
-            display: inline-block;
-            font-size: 1.1rem;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-            position: relative;
-            cursor: pointer;
-            transition: transform 0.2s ease, background-color 0.2s ease;
-        }
-
-        .code-block:hover {
-            transform: scale(1.02);
-            background-color: var(--code-hover);
-        }
-
-        .code-block::after {
-            content: "Click to copy";
-            position: absolute;
-            top: -30px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--accent-rust);
-            color: white;
-            font-size: 0.8rem;
-            padding: 4px 8px;
-            border-radius: 4px;
-            opacity: 0;
-            transition: opacity 0.2s ease;
-            pointer-events: none;
-            font-family: var(--font-sans);
-        }
-
-        .code-block:hover::after {
-            opacity: 1;
-        }
-
-        footer {
-            text-align: center;
-            color: var(--text-muted);
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
             font-size: 0.9rem;
-            padding-bottom: 2rem;
-            animation: fadeUp 1s ease-out 0.8s forwards;
-            opacity: 0;
         }
 
         /* Animations */
-        @keyframes fadeUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
-            to {
-                opacity: 1;
-                transform: translateY(0);
+        @keyframes slideIn {
+            from { transform: scaleX(0); }
+            to { transform: scaleX(1); }
+        }
+
+        /* Responsive UI Design */
+        @media (max-width: 1024px) {
+            .showcase-grid {
+                grid-template-columns: 1fr;
+                gap: 4rem;
+            }
+            .quickstart-card {
+                position: static;
+            }
+            .security-layout {
+                grid-template-columns: 1fr;
+                gap: 3rem;
+            }
+            .security-info h2 {
+                text-align: center;
             }
         }
 
-        /* Responsive */
         @media (max-width: 768px) {
-            header h1 {
-                font-size: 3rem;
+            h1.hero-title {
+                font-size: 2.8rem;
             }
-
-            header .subtitle {
-                font-size: 1.25rem;
+            .hero-subtitle {
+                font-size: 1.2rem;
             }
-
-            .cta-section h2 {
-                font-size: 2rem;
+            .nav-links {
+                display: none; /* simple hidden mobile nav for single page */
             }
-
+            .features-grid {
+                grid-template-columns: 1fr;
+                gap: 3rem;
+            }
+            .section-headline-serif {
+                font-size: 2.2rem;
+                margin-bottom: 3rem;
+            }
             .container {
-                padding: 3rem 1.5rem;
+                padding: 0 1.5rem;
+            }
+            .terminal-body {
+                aspect-ratio: auto;
+                height: 200px;
             }
         }
     </style>
@@ -259,161 +965,548 @@
 
 <body>
 
-    <button class="theme-toggle" id="theme-btn" aria-label="Toggle Dark Mode" onclick="toggleTheme()">
-        🌙
-    </button>
-
-    <div class="container">
-        <header>
-            <h1>Open<span style="color: var(--accent-orange);">Chat</span><span style="color: var(--accent-gold);">TUI</span></h1>
-            <p class="subtitle">Encrypted peer-to-peer terminal chat.<br>No servers. No logs. No traces.</p>
-        </header>
-
-        <section class="cta-section" style="margin-top: -2rem; padding: 2rem 0; border: none;">
-            <h2>Start Communicating</h2>
-            <p style="margin-bottom: 0.5rem; color: var(--text-charcoal); font-weight: bold;">1. Clone & Install</p>
-            <div class="code-block" onclick="copyCode(this)" style="margin-bottom: 1.5rem; display: block; max-width: 600px; margin-left: auto; margin-right: auto; text-align: left;">
-                git clone https://github.com/SinghArindam/OpenChatTUI.git<br>
-                cd OpenChatTUI<br><br>
-                <span style="color: var(--text-muted);"># Install uv (macOS/Linux)</span><br>
-                curl -LsSf https://astral.sh/uv/install.sh | sh<br><br>
-                <span style="color: var(--text-muted);"># Or install uv (Windows)</span><br>
-                powershell -c "irm https://astral.sh/uv/install.ps1 | iex"
-            </div>
+    <!-- Header Navigation -->
+    <header class="nav-header">
+        <div class="container nav-container">
+            <a href="#" class="logo">
+                Open<span class="logo-chat">Chat</span><span class="logo-tui">TUI</span>
+            </a>
             
-            <p style="margin-bottom: 0.5rem; color: var(--text-charcoal); font-weight: bold;">2. Launch Sandbox</p>
-            <div class="code-block" onclick="copyCode(this)" style="display: block; max-width: 600px; margin-left: auto; margin-right: auto; text-align: left;">
-                uv run openchat.py
+            <nav class="nav-links">
+                <a href="#features" class="nav-link">Features</a>
+                <a href="#showcase" class="nav-link">Screenshots</a>
+                <a href="#security" class="nav-link">Security</a>
+                <a href="#commands" class="nav-link">Commands</a>
+            </nav>
+
+            <div class="nav-actions">
+                <button class="theme-toggle-btn" id="theme-btn" aria-label="Toggle Dark Mode" onclick="toggleTheme(event)">
+                    <!-- Moon Icon SVG -->
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="moon-svg"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+                </button>
+                <a href="https://github.com/SinghArindam/OpenChatTUI" target="_blank" rel="noopener" class="github-link-btn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
+                    GitHub
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        
+        <!-- Hero Section -->
+        <section class="hero">
+            <h1 class="hero-title">Open<span style="color: var(--accent-peach);">Chat</span><span style="color: var(--accent-gold);">TUI</span></h1>
+            <p class="hero-subtitle">Encrypted peer-to-peer terminal chat. No servers. No logs. No traces.</p>
+            
+            <div class="hero-badge-container">
+                <span class="hero-badge">AES-256-GCM</span>
+                <span class="hero-badge">X25519 ECDH</span>
+                <span class="hero-badge">Ed25519 Signatures</span>
+                <span class="hero-badge">RAM-Only Workspace</span>
+            </div>
+
+            <a href="#showcase" class="cta-btn-primary">Get Started</a>
+        </section>
+
+        <!-- Interactive Showcase (Quick Start + Terminal Gallery) -->
+        <section class="showcase-grid" id="showcase">
+            
+            <!-- Quickstart Card -->
+            <div class="quickstart-card">
+                <h2 class="quickstart-title">Quick Start</h2>
+                <p class="quickstart-desc">Get connected in less than 30 seconds using the Astral uv sandbox.</p>
+                
+                <div class="qs-tab-headers">
+                    <button class="qs-tab-btn active" onclick="switchQsTab('unix')">macOS / Linux</button>
+                    <button class="qs-tab-btn" onclick="switchQsTab('windows')">Windows</button>
+                </div>
+
+                <!-- macOS / Linux Tab Content -->
+                <div class="qs-content-block active" id="qs-unix">
+                    <div class="step-item">
+                        <span class="step-label">1. Clone Repository</span>
+                        <div class="terminal-cmd-box">
+                            <span class="cmd-text" id="cmd-clone-unix">git clone https://github.com/SinghArindam/OpenChatTUI.git</span>
+                            <button class="copy-btn" onclick="copyText('cmd-clone-unix', this)" aria-label="Copy Command">
+                                <svg class="copy-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                                <svg class="success-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            </button>
+                            <span class="copy-tooltip">Copied!</span>
+                        </div>
+                    </div>
+                    
+                    <div class="step-item">
+                        <span class="step-label">2. Install uv Environment manager</span>
+                        <div class="terminal-cmd-box">
+                            <span class="cmd-text" id="cmd-uv-unix">curl -LsSf https://astral.sh/uv/install.sh | sh</span>
+                            <button class="copy-btn" onclick="copyText('cmd-uv-unix', this)" aria-label="Copy Command">
+                                <svg class="copy-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                                <svg class="success-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            </button>
+                            <span class="copy-tooltip">Copied!</span>
+                        </div>
+                    </div>
+
+                    <div class="step-item">
+                        <span class="step-label">3. Launch Secure Sandbox</span>
+                        <div class="terminal-cmd-box">
+                            <span class="cmd-text" id="cmd-run-unix">cd OpenChatTUI && uv run openchat.py</span>
+                            <button class="copy-btn" onclick="copyText('cmd-run-unix', this)" aria-label="Copy Command">
+                                <svg class="copy-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                                <svg class="success-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            </button>
+                            <span class="copy-tooltip">Copied!</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Windows Tab Content -->
+                <div class="qs-content-block" id="qs-windows">
+                    <div class="step-item">
+                        <span class="step-label">1. Clone Repository</span>
+                        <div class="terminal-cmd-box">
+                            <span class="cmd-text" id="cmd-clone-win">git clone https://github.com/SinghArindam/OpenChatTUI.git</span>
+                            <button class="copy-btn" onclick="copyText('cmd-clone-win', this)" aria-label="Copy Command">
+                                <svg class="copy-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                                <svg class="success-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            </button>
+                            <span class="copy-tooltip">Copied!</span>
+                        </div>
+                    </div>
+                    
+                    <div class="step-item">
+                        <span class="step-label">2. Install uv Environment manager</span>
+                        <div class="terminal-cmd-box">
+                            <span class="cmd-text" id="cmd-uv-win">powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"</span>
+                            <button class="copy-btn" onclick="copyText('cmd-uv-win', this)" aria-label="Copy Command">
+                                <svg class="copy-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                                <svg class="success-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            </button>
+                            <span class="copy-tooltip">Copied!</span>
+                        </div>
+                    </div>
+
+                    <div class="step-item">
+                        <span class="step-label">3. Launch Secure Sandbox</span>
+                        <div class="terminal-cmd-box">
+                            <span class="cmd-text" id="cmd-run-win">cd OpenChatTUI; uv run openchat.py</span>
+                            <button class="copy-btn" onclick="copyText('cmd-run-win', this)" aria-label="Copy Command">
+                                <svg class="copy-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                                <svg class="success-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            </button>
+                            <span class="copy-tooltip">Copied!</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Terminal Mockup Container -->
+            <div class="terminal-showcase">
+                <div class="terminal-mockup">
+                    <div class="terminal-titlebar">
+                        <div class="terminal-dots">
+                            <span class="dot dot-red"></span>
+                            <span class="dot dot-yellow"></span>
+                            <span class="dot dot-green"></span>
+                        </div>
+                        <div class="terminal-filename">openchat.tui</div>
+                        <div class="terminal-actions-placeholder"></div>
+                    </div>
+                    
+                    <div class="terminal-tabs">
+                        <button class="terminal-tab-btn active" onclick="switchScreenshotTab('login', 0)">login.tui</button>
+                        <button class="terminal-tab-btn" onclick="switchScreenshotTab('lobby', 1)">lobby.tui</button>
+                        <button class="terminal-tab-btn" onclick="switchScreenshotTab('chat', 2)">chat.tui</button>
+                        <button class="terminal-tab-btn" onclick="switchScreenshotTab('exit', 3)">exit.tui</button>
+                    </div>
+
+                    <div class="terminal-body">
+                        <img src="assets/screenshot_login.svg" alt="Login Interface" class="terminal-screenshot active" id="shot-login">
+                        <img src="assets/screenshot_lobby.svg" alt="Lobby Interface" class="terminal-screenshot" id="shot-lobby">
+                        <img src="assets/screenshot_chat.svg" alt="Chat Interface" class="terminal-screenshot" id="shot-chat">
+                        <img src="assets/screenshot_exit.svg" alt="Exit Interface" class="terminal-screenshot" id="shot-exit">
+                    </div>
+                </div>
+
+                <div class="screenshot-caption-box">
+                    <h3 class="screenshot-caption-title" id="caption-title">Login & Customization</h3>
+                    <p class="screenshot-caption-desc" id="caption-desc">Pick a persistent username and select your custom terminal theme color (Peach, Gold, Mint, Lavender, etc.).</p>
+                </div>
             </div>
         </section>
 
-        <section class="features">
-            <div class="feature-card">
-                <h3>Absolute Privacy</h3>
-                <p>Everything lives in RAM and dies when you close the app. Messages are end-to-end encrypted directly
-                    peer-to-peer using Military-grade AES-256-GCM and X25519 ECDH.</p>
-            </div>
-            <div class="feature-card">
-                <h3>Beautiful Interface</h3>
-                <p>A striking, high-contrast AMOLED UI built entirely in the terminal. Experience dynamic autocomplete,
-                    an intelligent escape overlay, and intuitive navigation.</p>
-            </div>
-            <div class="feature-card">
-                <h3>Zero Configuration</h3>
-                <p>No databases or central servers required. Automatic network discovery via UDP broadcast seamlessly
-                    connects you to peers locally, or connect directly via IP address.</p>
-            </div>
-        </section>
-
-        <section class="screenshots">
-            <h2 style="text-align: center; margin-bottom: 2rem; font-family: var(--font-serif); font-size: 2.5rem;">Application Interface</h2>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 4rem;">
-                <div>
-                    <h3 style="margin-bottom: 0.5rem;">Login & Customization</h3>
-                    <img src="assets/screenshot_login.svg" alt="Login Screen" style="width: 100%; border-radius: 8px; box-shadow: 0 10px 20px rgba(0,0,0,0.1);">
+        <!-- Features Grid -->
+        <section class="features-section" id="features">
+            <h2 class="section-headline-serif">Designed for Uncompromising Privacy</h2>
+            
+            <div class="features-grid">
+                <div class="feature-item">
+                    <span class="feature-number">01</span>
+                    <h3>Absolute Privacy</h3>
+                    <p>Everything lives exclusively in system RAM and dies immediately when you exit the app. Messages are end-to-end encrypted peer-to-peer using high-grade X25519 ECDH key exchanges and AES-256-GCM encryption.</p>
                 </div>
-                <div>
-                    <h3 style="margin-bottom: 0.5rem;">Network Discovery</h3>
-                    <img src="assets/screenshot_lobby.svg" alt="Lobby Screen" style="width: 100%; border-radius: 8px; box-shadow: 0 10px 20px rgba(0,0,0,0.1);">
+                
+                <div class="feature-item">
+                    <span class="feature-number">02</span>
+                    <h3>Stunning Interface</h3>
+                    <p>A high-contrast, beautiful AMOLED-friendly design crafted exclusively for modern terminals. Features fluid keyboard navigation, smart autocomplete suggestion drawers, and custom overlay menus.</p>
                 </div>
-                <div>
-                    <h3 style="margin-bottom: 0.5rem;">Encrypted Chat & Autocomplete</h3>
-                    <img src="assets/screenshot_chat.svg" alt="Chat Screen" style="width: 100%; border-radius: 8px; box-shadow: 0 10px 20px rgba(0,0,0,0.1);">
-                </div>
-                <div>
-                    <h3 style="margin-bottom: 0.5rem;">Secure Exit Menu</h3>
-                    <img src="assets/screenshot_exit.svg" alt="Exit Menu" style="width: 100%; border-radius: 8px; box-shadow: 0 10px 20px rgba(0,0,0,0.1);">
+                
+                <div class="feature-item">
+                    <span class="feature-number">03</span>
+                    <h3>Zero Infrastructure</h3>
+                    <p>No servers, central relays, or database backends. Direct host-to-host UDP broadcasts discovery resolves local network peers instantly, with optional IP routing for external nodes.</p>
                 </div>
             </div>
         </section>
 
-        <section class="commands" style="margin-bottom: 4rem;">
-            <h2 style="text-align: center; margin-bottom: 2rem; font-family: var(--font-serif); font-size: 2.5rem;">Commands Reference</h2>
-            <table style="width: 100%; border-collapse: collapse; background: var(--bg-cream); box-shadow: 0 10px 20px rgba(0,0,0,0.05); border-radius: 8px; overflow: hidden; transition: background-color 0.5s ease;">
-                <tr style="background: var(--text-charcoal); color: var(--bg-cream); text-align: left; transition: background-color 0.5s ease, color 0.5s ease;">
-                    <th style="padding: 1rem;">Command</th>
-                    <th style="padding: 1rem;">Description</th>
-                </tr>
-                <tr style="border-bottom: 1px solid var(--border-sepia);">
-                    <td style="padding: 1rem; font-family: var(--font-mono); color: var(--accent-rust);">/join &lt;ID&gt;</td>
-                    <td style="padding: 1rem;">Connect to a peer by Chat ID</td>
-                </tr>
-                <tr style="border-bottom: 1px solid var(--border-sepia);">
-                    <td style="padding: 1rem; font-family: var(--font-mono); color: var(--accent-rust);">/connect &lt;IP:PORT&gt;</td>
-                    <td style="padding: 1rem;">Direct connection by address</td>
-                </tr>
-                <tr style="border-bottom: 1px solid var(--border-sepia);">
-                    <td style="padding: 1rem; font-family: var(--font-mono); color: var(--accent-rust);">/lobby</td>
-                    <td style="padding: 1rem;">Disconnect and return to the lobby screen</td>
-                </tr>
-                <tr style="border-bottom: 1px solid var(--border-sepia);">
-                    <td style="padding: 1rem; font-family: var(--font-mono); color: var(--accent-rust);">/login</td>
-                    <td style="padding: 1rem;">Disconnect and return to the login screen</td>
-                </tr>
-                <tr style="border-bottom: 1px solid var(--border-sepia);">
-                    <td style="padding: 1rem; font-family: var(--font-mono); color: var(--accent-rust);">/save txt</td>
-                    <td style="padding: 1rem;">Export chat as plaintext file</td>
-                </tr>
-                <tr style="border-bottom: 1px solid var(--border-sepia);">
-                    <td style="padding: 1rem; font-family: var(--font-mono); color: var(--accent-rust);">/save html</td>
-                    <td style="padding: 1rem;">Export chat as styled HTML file</td>
-                </tr>
-                <tr style="border-bottom: 1px solid var(--border-sepia);">
-                    <td style="padding: 1rem; font-family: var(--font-mono); color: var(--accent-rust);">/clear</td>
-                    <td style="padding: 1rem;">Clear the screen (history preserved)</td>
-                </tr>
-                <tr style="border-bottom: 1px solid var(--border-sepia);">
-                    <td style="padding: 1rem; font-family: var(--font-mono); color: var(--accent-rust);">/peers</td>
-                    <td style="padding: 1rem;">List connected peers with IDs</td>
-                </tr>
-                <tr style="border-bottom: 1px solid var(--border-sepia);">
-                    <td style="padding: 1rem; font-family: var(--font-mono); color: var(--accent-rust);">/fingerprint</td>
-                    <td style="padding: 1rem;">Show your Ed25519 fingerprint</td>
-                </tr>
-                <tr style="border-bottom: 1px solid var(--border-sepia);">
-                    <td style="padding: 1rem; font-family: var(--font-mono); color: var(--accent-rust);">/verify &lt;ID&gt;</td>
-                    <td style="padding: 1rem;">Show a peer's fingerprint</td>
-                </tr>
-                <tr style="border-bottom: 1px solid var(--border-sepia);">
-                    <td style="padding: 1rem; font-family: var(--font-mono); color: var(--accent-rust);">/help</td>
-                    <td style="padding: 1rem;">List all commands</td>
-                </tr>
-                <tr>
-                    <td style="padding: 1rem; font-family: var(--font-mono); color: var(--accent-rust);">/exit</td>
-                    <td style="padding: 1rem;">Secure wipe and quit</td>
-                </tr>
-            </table>
+        <!-- Security Model Section -->
+        <section class="security-section" id="security">
+            <div class="security-layout">
+                <div class="security-info">
+                    <h2>Cryptographic Architecture</h2>
+                    <p>OpenChatTUI is architected upon industry-standard, time-tested cryptographic primitives. Every message is secured using modern authenticated encryption, ensuring zero leakage of metadata or communication content.</p>
+                </div>
+                
+                <div class="security-table-wrapper">
+                    <table class="security-table">
+                        <thead>
+                            <tr>
+                                <th>Security Property</th>
+                                <th>Primitive</th>
+                                <th>Function</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Key Exchange</td>
+                                <td><span class="primitive-badge">X25519 ECDH</span></td>
+                                <td>Generates ephemeral secrets without transmission</td>
+                            </tr>
+                            <tr>
+                                <td>Encryption</td>
+                                <td><span class="primitive-badge">AES-256-GCM</span></td>
+                                <td>Authenticated, authenticated payload encryption</td>
+                            </tr>
+                            <tr>
+                                <td>Signatures</td>
+                                <td><span class="primitive-badge">Ed25519</span></td>
+                                <td>Out-of-band peer verification against MitM</td>
+                            </tr>
+                            <tr>
+                                <td>Key Derivation</td>
+                                <td><span class="primitive-badge">HKDF-SHA256</span></td>
+                                <td>Derives separate keys per peer pair, per direction</td>
+                            </tr>
+                            <tr>
+                                <td>Forward Secrecy</td>
+                                <td><span class="primitive-badge">Ephemeral Keys</span></td>
+                                <td>Fresh session key generation on every socket connect</td>
+                            </tr>
+                            <tr>
+                                <td>Data Lifecycle</td>
+                                <td><span class="primitive-badge">RAM-Only</span></td>
+                                <td>Explicit zeroing/wiping of variables upon app close</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </section>
 
-        <footer>
-            <p>&copy; 2026 OpenChatTUI. Licensed under MIT.</p>
-        </footer>
-    </div>
+        <!-- Searchable Commands Browser -->
+        <section class="commands-section" id="commands">
+            <h2 class="section-headline-serif">Interactive Commands Browser</h2>
+            
+            <div class="commands-controls">
+                <div class="search-box-wrapper">
+                    <input type="text" class="commands-search" id="cmd-search-input" placeholder="Search terminal commands (e.g. /join, /save)..." oninput="filterCommands()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                </div>
+                
+                <div class="filter-pills">
+                    <button class="filter-pill active" onclick="filterCategory('all', this)">All</button>
+                    <button class="filter-pill" onclick="filterCategory('connection', this)">Connection</button>
+                    <button class="filter-pill" onclick="filterCategory('session', this)">Session</button>
+                    <button class="filter-pill" onclick="filterCategory('security', this)">Security</button>
+                    <button class="filter-pill" onclick="filterCategory('export', this)">Export</button>
+                    <button class="filter-pill" onclick="filterCategory('utilities', this)">Utilities</button>
+                </div>
+            </div>
 
+            <div class="commands-table-wrapper">
+                <table class="commands-table" id="commands-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 35%;">Command</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr data-cat="connection">
+                            <td><span class="cmd-name">/join &lt;ID&gt;</span></td>
+                            <td>Connect to a peer by Chat ID</td>
+                        </tr>
+                        <tr data-cat="connection">
+                            <td><span class="cmd-name">/connect &lt;IP:PORT&gt;</span></td>
+                            <td>Direct connection by IP and port address</td>
+                        </tr>
+                        <tr data-cat="session">
+                            <td><span class="cmd-name">/lobby</span></td>
+                            <td>Disconnect from peer and return to network lobby</td>
+                        </tr>
+                        <tr data-cat="session">
+                            <td><span class="cmd-name">/login</span></td>
+                            <td>Disconnect from lobby and return to usernames login</td>
+                        </tr>
+                        <tr data-cat="export">
+                            <td><span class="cmd-name">/save txt</span></td>
+                            <td>Export active chat history as plain text file</td>
+                        </tr>
+                        <tr data-cat="export">
+                            <td><span class="cmd-name">/save html</span></td>
+                            <td>Export active chat history as styled offline HTML</td>
+                        </tr>
+                        <tr data-cat="utilities">
+                            <td><span class="cmd-name">/clear</span></td>
+                            <td>Clear the chat window view (history remains intact)</td>
+                        </tr>
+                        <tr data-cat="connection">
+                            <td><span class="cmd-name">/peers</span></td>
+                            <td>List active peer connections with usernames and IDs</td>
+                        </tr>
+                        <tr data-cat="security">
+                            <td><span class="cmd-name">/fingerprint</span></td>
+                            <td>Display your local cryptographic identity fingerprint</td>
+                        </tr>
+                        <tr data-cat="security">
+                            <td><span class="cmd-name">/verify &lt;ID&gt;</span></td>
+                            <td>Display identity fingerprint of a specified active peer</td>
+                        </tr>
+                        <tr data-cat="utilities">
+                            <td><span class="cmd-name">/help</span></td>
+                            <td>Display direct instructions for all terminal commands</td>
+                        </tr>
+                        <tr data-cat="session">
+                            <td><span class="cmd-name">/exit</span></td>
+                            <td>Perform variables zero-out wipe and quit interface</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="no-results-message" id="no-results">No commands found matching your criteria.</div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-logo">
+                Open<span style="color: var(--accent-peach);">Chat</span><span style="color: var(--accent-gold);">TUI</span>
+            </div>
+            <p class="footer-text">Built for developers who value absolute digital sovereignty.</p>
+            <p class="footer-text" style="margin-top: -0.85rem; font-size: 0.82rem;">&copy; 2026 OpenChatTUI. Licensed under the MIT License.</p>
+            <div class="footer-links">
+                <a href="https://github.com/SinghArindam/OpenChatTUI" target="_blank" rel="noopener">GitHub</a>
+                <a href="https://github.com/SinghArindam/OpenChatTUI/blob/main/LICENSE" target="_blank" rel="noopener">License</a>
+                <a href="#features">Features</a>
+                <a href="#commands">Commands</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Interactive Scripts -->
     <script>
-        function toggleTheme() {
-            const body = document.body;
+        // Set Theme on script loading (prevents flash of white)
+        (function() {
+            const savedTheme = localStorage.getItem("theme");
+            const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+            if (savedTheme === "dark" || (!savedTheme && prefersDark)) {
+                document.documentElement.setAttribute("data-theme", "dark");
+            }
+        })();
+
+        document.addEventListener("DOMContentLoaded", () => {
+            // Align header switcher icon
+            const isDark = document.documentElement.getAttribute("data-theme") === "dark";
+            updateThemeIcon(isDark);
+        });
+
+        // Theme switching with circular ripple effect
+        function toggleTheme(event) {
+            const x = event ? event.clientX : window.innerWidth / 2;
+            const y = event ? event.clientY : window.innerHeight / 2;
+            
+            // Distance from click point to furthest viewport corner
+            const endRadius = Math.hypot(
+                Math.max(x, window.innerWidth - x),
+                Math.max(y, window.innerHeight - y)
+            );
+
+            // Set coordinates on root element for CSS animation
+            document.documentElement.style.setProperty('--ripple-x', `${x}px`);
+            document.documentElement.style.setProperty('--ripple-y', `${y}px`);
+            document.documentElement.style.setProperty('--ripple-r', `${endRadius}px`);
+
+            const transitionTheme = () => {
+                const isDark = document.documentElement.getAttribute("data-theme") === "dark";
+                if (isDark) {
+                    document.documentElement.removeAttribute("data-theme");
+                    localStorage.setItem("theme", "light");
+                    updateThemeIcon(false);
+                } else {
+                    document.documentElement.setAttribute("data-theme", "dark");
+                    localStorage.setItem("theme", "dark");
+                    updateThemeIcon(true);
+                }
+            };
+
+            // Fallback for browsers that don't support modern View Transitions API
+            if (!document.startViewTransition) {
+                transitionTheme();
+                return;
+            }
+
+            document.startViewTransition(transitionTheme);
+        }
+
+        function updateThemeIcon(isDark) {
             const btn = document.getElementById("theme-btn");
-            if (body.getAttribute("data-theme") === "dark") {
-                body.removeAttribute("data-theme");
-                btn.textContent = "🌙";
+            if (isDark) {
+                // Sun Icon for Light theme
+                btn.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="sun-svg"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>`;
             } else {
-                body.setAttribute("data-theme", "dark");
-                btn.textContent = "☀️";
+                // Moon Icon for Dark theme
+                btn.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="moon-svg"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>`;
             }
         }
 
-        function copyCode(element) {
-            const text = element.innerText;
-            navigator.clipboard.writeText(text).then(() => {
-                const originalText = element.innerText;
-                element.innerText = "Copied!";
-                element.style.backgroundColor = "var(--accent-rust)";
+        // Quickstart Tab Switching
+        function switchQsTab(platform) {
+            document.querySelectorAll(".qs-tab-btn").forEach(btn => btn.classList.remove("active"));
+            document.querySelectorAll(".qs-content-block").forEach(block => block.classList.remove("active"));
+            
+            if (platform === 'unix') {
+                event.currentTarget.classList.add("active");
+                document.getElementById("qs-unix").classList.add("active");
+            } else {
+                event.currentTarget.classList.add("active");
+                document.getElementById("qs-windows").classList.add("active");
+            }
+        }
+
+        // Copy Text Function
+        function copyText(elementId, btnElement) {
+            const textToCopy = document.getElementById(elementId).innerText;
+            
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                // Add success state to button
+                btnElement.classList.add("copied");
+                
+                // Show tooltip
+                const tooltip = btnElement.nextElementSibling;
+                tooltip.classList.add("show");
+                
                 setTimeout(() => {
-                    element.innerText = originalText;
-                    element.style.backgroundColor = "";
-                }, 1500);
+                    btnElement.classList.remove("copied");
+                    tooltip.classList.remove("show");
+                }, 1800);
+            }).catch(err => {
+                console.error("Failed to copy text: ", err);
             });
+        }
+
+        // Screenshot Slider Switching
+        const captions = [
+            {
+                title: "Login & Customization",
+                desc: "Pick a persistent username and select your custom terminal theme color (Peach, Gold, Mint, Lavender, etc.)."
+            },
+            {
+                title: "Network Discovery",
+                desc: "Wait in the lobby to automatically detect local peers via UDP broadcast, or connect to remote nodes directly by typing /connect &lt;IP:PORT&gt;."
+            },
+            {
+                title: "Encrypted Chat",
+                desc: "Chat securely in full-mesh topology. Features rich inline tab-completions, interactive / commands, and real-time status indicators."
+            },
+            {
+                title: "Secure Exit Menu",
+                desc: "Wipe cryptographic keys and all chat history instantly from RAM by hitting Esc or using Ctrl+Q."
+            }
+        ];
+
+        function switchScreenshotTab(tabId, index) {
+            // Update Tab Button
+            document.querySelectorAll(".terminal-tab-btn").forEach(btn => btn.classList.remove("active"));
+            event.currentTarget.classList.add("active");
+
+            // Update Screenshot Image
+            document.querySelectorAll(".terminal-screenshot").forEach(img => img.classList.remove("active"));
+            document.getElementById(`shot-${tabId}`).classList.add("active");
+
+            // Update Caption with elegant fade
+            const capTitle = document.getElementById("caption-title");
+            const capDesc = document.getElementById("caption-desc");
+            
+            capTitle.style.animation = "none";
+            capDesc.style.animation = "none";
+            
+            // Trigger reflow
+            capTitle.offsetHeight; 
+            
+            capTitle.innerText = captions[index].title;
+            capDesc.innerHTML = captions[index].desc;
+            
+            capTitle.style.animation = "fadeIn 0.3s ease-out forwards";
+            capDesc.style.animation = "fadeIn 0.3s ease-out forwards";
+        }
+
+        // Commands Filter System
+        let activeCategory = 'all';
+
+        function filterCategory(category, buttonElement) {
+            // Update filter pills active state
+            document.querySelectorAll(".filter-pill").forEach(pill => pill.classList.remove("active"));
+            buttonElement.classList.add("active");
+            
+            activeCategory = category;
+            applyFilters();
+        }
+
+        function filterCommands() {
+            applyFilters();
+        }
+
+        function applyFilters() {
+            const query = document.getElementById("cmd-search-input").value.toLowerCase().trim();
+            const rows = document.querySelectorAll("#commands-table tbody tr");
+            let visibleCount = 0;
+
+            rows.forEach(row => {
+                const cmdName = row.querySelector(".cmd-name").innerText.toLowerCase();
+                const cmdDesc = row.cells[1].innerText.toLowerCase();
+                const cmdCat = row.getAttribute("data-cat");
+
+                const matchesQuery = cmdName.includes(query) || cmdDesc.includes(query);
+                const matchesCategory = activeCategory === 'all' || cmdCat === activeCategory;
+
+                if (matchesQuery && matchesCategory) {
+                    row.classList.remove("hidden");
+                    visibleCount++;
+                } else {
+                    row.classList.add("hidden");
+                }
+            });
+
+            const noResults = document.getElementById("no-results");
+            if (visibleCount === 0) {
+                noResults.classList.add("visible");
+            } else {
+                noResults.classList.remove("visible");
+            }
         }
     </script>
 </body>
